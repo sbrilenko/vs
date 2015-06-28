@@ -1,0 +1,119 @@
+<div class="clear_both"></div>
+<div id="bottom-f">
+<div id="click-reg" class="margin_auto footer-coord-click-region-width">
+    <div class="p-a footer-coord-click-region-width footer-coord-click-region">
+    
+    </div>
+</div>
+<div class="margin_auto bottom-duga"></div>
+<div class="margin_auto bottom-arrow"></div>
+<div class="background-white white-koord-back">
+<div class="koord-ul ">
+    <ul class="p-r" style="overflow: hidden;height: 0;">
+    <li class="bottom-ul1">
+        <div class="text">Центральный офис (фактический):</div>
+        <div class="text-desc">г. Макеевка, ул. Депутатская, 19Г.<br />(050)&nbsp;474-33-83,&nbsp;(099)&nbsp;22-64-778</div>
+    </li>
+    <li class="bottom-ul2">
+        <div class="text">Юридический адрес:</div>
+        <div class="text-desc">г. Макеевка, ул. Скнарева, 50А.<br />(050)&nbsp;474-33-83,&nbsp;(099)&nbsp;22-64-778</div>
+    </li>
+    <li class="bottom-ul3">
+        <div class="text">Филиалы:</div>
+         <div class="text-desc"><b>В Луганске:</b>&nbsp;(099)&nbsp;22-64-778<br /><b>В Днепропетровске:</b>&nbsp;(050)&nbsp;342-05-02,<br />(050)&nbsp;106-20-48</div>
+    </li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="footer-top">
+<div class="margin_auto width4size">
+<div class="body-margin">
+<div class="clear_both"></div>
+<div class="f-l">
+    <div class="footer-text">
+   &copy;&nbsp;<?php print date('Y');?>&nbsp;Торговый дом&nbsp;ООО&nbsp;«Высший сорт»
+    </div>
+    <div class="footer-text">
+        <a href="/contacts">Контактная информация</a>
+    </div>
+</div>
+<div class="f-r">
+    <a href="#" class="f-l facebook"></a>
+    <a href="#" class="f-l vk"></a>
+    <a href="#" class="f-l youtube"></a>
+    <a href="" class="f-l gp"></a>
+</div>
+    <div class='margin_auto koord-text'>Координаты компании</div>
+
+
+</div>
+</div>
+</div>
+<div class="footer-bottom-back"></div>
+<div class="clear_both"></div>
+<script type="text/javascript">
+$(function()
+{
+    $(document).on('click touchstart','#bottom-f #click-reg',function()
+    {
+        if($('#bottom-f:animated').length) { return false;}
+        else
+        {
+            if($('#bottom-f').hasClass('active'))
+            {
+                $("#bottom-f").animate({top:0}, 1000, function() {$('#bottom-f').removeClass('active')});
+                $(".koord-ul ul").animate({height:0}, 1000, function() {});
+                $('.white-koord-back').animate({height:0}, 1000, function() {});
+                $('.bottom-arrow').removeClass('active')
+                
+            }
+            else
+            {
+                var size=('innerWidth' in window) ? window.innerWidth : document.body.offsetWidth;
+                var h=117;
+                if(size<1200) {h=117;}
+                else
+        		if (size>=1201 && size<1599) {h=130;}
+        		else
+                if (size>=1600) {h=150;}
+                $("#bottom-f").animate({top:(-1)*h}, 1000, function() {$('#bottom-f').addClass('active')});
+                $(".koord-ul ul").animate({height:h}, 1000, function() {});
+                $('.white-koord-back').animate({height:h}, 1000, function() {});
+                $('.bottom-arrow').addClass('active')
+                
+            }
+        }
+        
+    })
+    var doit;
+    $(window).bind('resize',function(){
+      clearTimeout(doit);
+      doit = setTimeout(function(){
+      if($('#bottom-f:animated').length) { return false;}
+      else
+      {
+        if($('.koord-ul ul').is(':visible') && $('#bottom-f').hasClass('active'))
+            {
+                var size=('innerWidth' in window) ? window.innerWidth : document.body.offsetWidth;
+                var h=117;
+                if(size<1200) {h=117;}
+                else
+        		if (size>=1201 && size<1599) {h=130;}
+        		else
+                if (size>=1600) {h=150;}
+                $("#bottom-f").css({top:(-1)*h});
+                $(".koord-ul ul").css({height:h});
+                $('.white-koord-back').css({height:h});
+                
+            }
+      }
+            
+        
+} , 100)
+})
+})
+
+</script>
+

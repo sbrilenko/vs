@@ -1,0 +1,127 @@
+<?
+session_start();
+print_r($_SESSION);
+$page->addScript('js/jquery-ui_1.9.1.js','js/jquery.form.js','js/oform.js','js/json2.js','js/user.js');
+$page->addCss('css/jquery-ui-1.9.1.css');
+require_once "class.history.php";
+?>
+<div id="secret"></div>
+<div class="clear_both"></div>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Предыдущие заказы</h1>
+            <div class="before-kkz-box-block"></div>
+            <ul class="cart-top-blocks">
+                <li class="f-l f">
+				<div class="uderfooter-li3-img" style="background-position: right top;">
+                    <div class="underfooter-title f-l cart_block"  >
+                        <a href="/kkz">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div></div>
+                    <!--div class="underfooter-title-cart-set f-l">
+                        <a href="/set">Готовые наборов</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div-->
+                </li>
+                <li class="left s">
+				<div class="underfooter-title-cart-delivery">
+                    <div class="underfooter-title cart_block_2" >
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+					
+                    
+                </li>
+             </ul>
+            <?php include $root."/lib/dcardin.php";?>
+            <div class="clear_both"></div>
+            <div class="delim-sh-top-cart"></div>
+            <div class="clear_both"></div>
+            <?php
+            if(isset($_SESSION['client']['id']))
+            {
+                $history=new history($_SESSION['client']['id']);
+                $arr=$history-> get_ret();
+                if(count($arr)>0)
+                {
+                    echo '<TABLE class="cart_history" >';
+                    foreach($arr as $index=>$val)
+                    {
+                        echo '<TR>
+                                    <TD class="first_td">Заказ №'.$val['n'].' от '.$val['date'].' </TD> <TD class="second_td">'.$val['count'].' товаров на сумму <span>'.number_format($val['sum'],2,'.','').' грн</span></TD><TD ><a href="cart/activate/'.$val['n'].'"><div class="history_cart_bt">Посмотреть и копировать</div></a></TD>
+                            </TR>';
+                    }
+                    echo '</TABLE>';
+                }
+                else
+                {
+                    echo "<div class='text-align-c'>Данные отсутствуют</div>";
+                }
+            }
+            else
+            {
+                echo "<div class='text-align-c'>Данные отсутствуют</div>";
+            }
+
+            ?>
+		    <!--<TABLE class="cart_history" >
+                    <TR>
+                           <TD class="first_td">Заказ №241212001 от 24 декабря 2012 </TD> <TD class="second_td">12 товаров на сумму <span>1903,00 грн</span></TD> <TD ><div class="history_cart_bt pad_left_38">Посмотреть</div></TD><TD ><div class="history_cart_bt">Копировать</div></TD>
+                    </TR>
+                    <TR>
+                            <TD class="first_td">Заказ №241212567 от 24 сетнября 2012 </TD> <TD class="second_td">120 товаров на сумму <span>1903,00 грн</span></TD> <TD ><div class="history_cart_bt pad_left_38">Посмотреть</div></TD><TD ><div class="history_cart_bt">Копировать</div></TD>
+                    </TR>
+                    <TR>
+                            <TD class="first_td">Заказ №241212001 от 24 апреля 2012 </TD> <TD class="second_td">120 товаров на сумму <span>1030,00 грн</span></TD> <TD ><div class="history_cart_bt pad_left_38">Посмотреть</div></TD><TD ><div class="history_cart_bt">Копировать</div></TD>
+                    </TR>
+            </TABLE>-->
+</div>
+        </div>
+<div class="clear_both"></div>
+            <div class="delim-sh"></div>
+             <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li >
+                    <div class="uderfooter_cust-li4-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/career">Карьера</a>
+                        <br /><br />
+                      Приглашаем на конкурсной основе новых сотрудников, желающих работать в успешной компании и профессиональном коллективе.
+                    </div>
+                </li>
+               <li class="left">
+                    <div class="uderfooter-li7-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter_cust-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/about">О компании</a>
+                        <br /><br />
+                         «Высший сорт» - успешная компания с многолетним опытом в сфере дистрибуции продуктов питания на территории Восточной Украины.
+                    </div>
+                </li>
+             </ul>
+             </div>
+        
+</div>
+
+</div>

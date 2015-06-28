@@ -1,0 +1,185 @@
+<?php
+    $page->addScript('js/json2.js','js/user.js','js/scrollmenu.js');
+    if((integer)$controller->getParam(1)>0)
+    {
+        $_SESSION['active']=(integer)$controller->getParam(1)-1;
+    }
+?>
+<script>
+$(function(){$('.bracketsHiddenTextdoc').slideUp(0)})
+
+$(function(){
+	 $('.readMore').click(function(){
+        if ($(this).text() == 'Скрыть') $(this).text('Читать дальше');
+        else $(this).text('Скрыть');
+        $(this).toggleClass('hiddenTextShow');
+        $('.textHidden').slideToggle('fast');
+    })
+	
+})
+</script>
+<div class="clear_both"></div>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Готовые наборы</h1>
+            <!--<div class="bredcromb">Товары с доставкой / Корпоративно-коллективный заказ</div>-->
+            <div class="before-kkz-box-block"></div>
+            <div class="f-l">
+                <div class="set-box"></div>
+            </div>
+            <?php include $root."/lib/dcardin.php";?>
+             <div class="kkz-box-text-width">
+                <div class="kkz-subtitle">Наборы</div>
+                <div class="kkz-text kkz-text-margin-top">Готовые наборы представляют собой мясное ассорти, составленное из различных сортов колбас.
+В готовый набор включены самые популярные и любимые потребителями виды колбасных изделий. Мы предлагаем вашему вниманию несколько различных вариантов наборов, рассчитанных на разное
+<div  class="textHidden" style="display:none;">
+ количество человек в компании. Богатство выбора, представленное в готовом наборе, сбережет ваше время и поможет определиться с выбором. Колбасные изделия представленные в наборах, профессионально нарезаны, оформлены и упакованы для максимального удобства покупателя.
+Остановив свой выбор на готовом наборе, вы доверите профессионалам подбор ассортимента наших лучших колбас для вашего  праздника.
+</div>
+        <a class="readMore">Читать дальше</a>
+</div>
+             </div>
+ <?php 
+   echo '<div class="clear_both"></div>
+            <div class="delim-sh-top"></div>
+             <div class="clear_both"></div>';
+ echo '<div class="before-sticky-navigation">
+ <div id="sticky_navigation">
+     <div class="scroll-menu-width-center">';
+include $root."/lib/block-status-user.php";
+ echo '</div></div></div>';
+echo "<div class='clear_both'></div>";
+echo '<div class="prodSetMargin"></div>';
+ 
+
+$page->addScript('js/jquery.form.js','js/oform.js','js/_AjaxGetInfoAboutSets.js');
+$db -> query("SELECT * FROM goods WHERE deleted = 0 AND displaylisting = 1 AND setofgoogs = 1 AND displayinorders=1");
+if($db -> getCount() > 0)
+{
+    echo '<div class="findIndex">';
+    $sets = $db -> getArray();
+    foreach($sets as $key => $set)
+    {
+        $new=($set['new']==1)?"<div class='new_sales'></div>":"";
+        $hot=($set['hot_products']==1)?"<div class='hit_sales'></div>":"";
+        echo '<div id ="i:'.$key.'" class="prodSet '.(($key + 1) % 4 ? '' : 'noMR').'">';
+            echo '<div class="prodSetPhoto ">';
+                echo $new.$hot;
+                $set['photo']=str_replace('.','',$set['photo']);
+                $set['photo']=str_replace('-','_',$set['photo']);
+                if(file_exists($root."/img/products/fsize1/".$set['photo']."_ass.jpg"))
+                    echo '<img src="../img/products/fsize1/'.$set['photo'].'_ass.jpg">';
+                else
+                echo "<img src='../img/products/fsize1/nabori-empty_ass.png' />";
+            echo '</div>';
+            echo '<div class="prodSetName">';
+                echo '<span>'.$set['name'].'</span>';
+            echo '</div>';
+            echo '<div class="after-name"></div>';
+            
+            $db -> query("SELECT name FROM classifierunits WHERE deleted = 0 AND id='".$set['id_base_ed_iz']."'");
+            if($db -> getCount() > 0)
+            {
+                $for_what = $db -> getValue();
+                $db -> query("SELECT price FROM priceofgoods WHERE deleted = 0 AND idgoods='".$set['id']."'");
+                if($db -> getCount() > 0)
+                {
+                    echo '<div class="prodSetText">Цена за '.$for_what.': '.number_format($db -> getValue(), 2, '.', '').' грн</div>';
+                }
+            }   
+            if($set['weight'])
+            echo '<div class="prodSetText">Вес: '.$set['weight'].'</div>';
+            $flag=0;
+            foreach($_SESSION['arrayorder'][$_SESSION['active']] as $ind=>$vol)
+            {
+                if($_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']==$set['id'])
+                {
+                    echo '<div class="kkz-price-style f-l">Стоимость: <span class="kkz-price">'.$prd->getuserpriceformat($set['id'],$set['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k']).' грн</span></div>';
+                    echo "<div class='clear_both'></div>";
+                    echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                    echo '<input type="hidden" name="id" value="'.$set['id'].'"/>';
+                    echo '<input type="button" class="kkz-plus-minus plus disabled" readonly disabled="disabled"  /><input type="text" readonly  class="val kkz-kol-input" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k'].'"/><input type="button" class="kkz-plus-minus minus disabled" readonly disabled="disabled"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($set['user_ed_iz'],$set['id']).'</span>';
+                    echo '<a href="/cart" class="in-basket">В корзине</a></form></div>';
+                    echo '<div class="infoAboutSetArrow"></div>';
+                    $flag=1;
+                    break;
+                }
+            }
+            if($flag==0)
+                        {
+                            echo '<div class="kkz-price-style f-l">Стоимость: <span class="kkz-price">'.$prd->getuserpriceformat($set['id'],$set['user_ed_iz'],1).' грн</span></div>';
+                            echo "<div class='clear_both'></div>";
+                            echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                            echo '<input type="hidden" name="id" value="'.$set['id'].'"/>';
+                            echo '<input type="button" class="kkz-plus-minus plus"  /><input type="text" readonly  class="val kkz-kol-input" value="1"/><input type="button" class="kkz-plus-minus minus"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($set['user_ed_iz'],$set['id']).'</span>';
+                            echo '<span class="buy kkz-buy">Купить</span></form></div>';
+                            echo '<div class="infoAboutSetArrow"></div>';
+
+                        }
+        echo '</div>';
+        echo ($key + 1) % 4 ? '' : '<div class="clear_both"></div>';
+//session_destroy();session_unset();
+
+
+    }
+    echo '</div>';
+}
+?>
+
+<div class="clear_both"></div>
+<!--<div class="info f-l">
+    *Под системой расчета в штуках подразумевается минимальный возможный вес покупки. Так например если минимальный вес составляет 400грн, а палка колбасы весит 800грн, вы получаете половину палки колбасы.   
+</div>
+<div class="float_right">
+    <div class="info-center-title f-l">Желаемый товар<div class="text">Напишите товар который вы хотели бы добавить на данную страницу</div></div>
+    <div class="f-l">
+        <textarea style="width:295px;min-width: 295px;max-width:295px;height:60px;min-height:60px;max-height:60px;padding: 0;"></textarea>
+        <div class=""><span class='send float_right'>Отправить</span></div>
+    </div>
+</div>-->
+ <div class="clear_both"></div>
+<div class="delim-sh"></div>
+ <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li>
+                    <div class="uderfooter-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Сеть реализации</a>
+                        <br /><br />
+                        Приглашаем Вас посетить фирменные магазины, что бы вы могли насладиться процессом выбора и найти. Приглашаем Вас посетить фирменные магазины.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li7-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/kkz">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li4-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/set">Готовые наборы</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+             </ul>
+             </div>
+
+ 
+</div>
+</div>
+</div>

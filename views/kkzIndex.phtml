@@ -1,0 +1,200 @@
+<?php
+session_start();
+$page->setTitle('Корпоративно-коллективный заказ | ВЫСШИЙ СОРТ');
+if((integer)$controller->getParam(1)>0)
+{
+    $_SESSION['active']=(integer)$controller->getParam(1)-1;
+}
+?>
+<script>
+$(function(){$('.bracketsHiddenTextdoc').slideUp(0)})
+
+$(function(){
+	 $('.readMore').click(function(){
+        if ($(this).text() == 'Скрыть') $(this).text('Читать дальше');
+        else $(this).text('Скрыть');
+        $(this).toggleClass('hiddenTextShow');
+        $('.textHidden').slideToggle('fast');
+    })
+})
+</script>
+
+<div class="clear_both"></div>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Корпоративно-коллективный заказ</h1>
+            <!--<div class="bredcromb">Товары с доставкой / Корпоративно-коллективный заказ</div>-->
+            <div class="before-kkz-box-block"></div>
+            <div class="f-l">
+                <div class="kkz-box"></div>
+            </div>
+            <?php include $root."/lib/dcardin.php";?>
+             <div class="kkz-box-text-width">
+                <div class="kkz-subtitle">Что это такое?</div><div class="kkz-text kkz-text-margin-top">
+                Корпоративно-коллективный заказ – это новый сервис компании «Высший сорт», созданный для вашего удобства. Теперь вы, ваши коллеги и друзья, можете получать самые свежие и качественные продукты, не выходя из офиса или дома.
+                Корпоративно-коллективный заказ подразумевает под собой групповой заказ на несколько человек, доставляемый по одному
+				
+				<div  class="textHidden" style="display:none;">адресу . Этот вариант предлагается для обеспечения бесплатной доставки товара. Заказ каждого участника упаковывается отдельно, со своим точным весом и ценой.
+                Доставка заказа осуществляется два раза в день. Таким образом товары, заказанные утром, вы получите во второй половине дня; и товары, заказанные во второй половине дня, вы получите в первой половине следующего дня.
+                <!--Так же колбасные изделия могут быть и в нарезанном виде, удобном для проведения корпоративных мероприятий и прочих праздников — см. раздел <a href="/set">«Готовые наборы»</a-->
+          </div>
+        <a class="readMore">Читать дальше</a>
+    
+	
+	
+		   </div>
+		   </div>
+        </div>
+   <div class="clear_both"></div>
+ <div class="delim-sh-top"></div>
+ <div class="clear_both"></div>
+<div class="before-sticky-navigation">
+ <div id="sticky_navigation">
+     <div class="scroll-menu-width-center">
+ <?php include $root."/lib/block-status-user.php";?>
+     </div>
+ </div>
+</div>
+ <?php 
+ echo "<div class='clear_both'></div>";
+ $page->addScript('js/jquery.form.js','js/mask.js','js/oform.js','js/json2.js','js/user.js','js/scrollmenu.js');
+ 
+ $arrpro=$prd->getkkz();
+ if(count($arrpro)>0)
+ {
+                    echo "<ul class='ass-all'>";
+                    foreach($arrpro as $arrproindex=>$arrproval)
+                    {
+                        if(($arrproindex+1)%4==0)
+                        {
+                            echo "<li class='kkz no-margin-r'>";
+                        }
+                        else  echo "<li class='kkz'>";
+                        if(!empty($arrproval['photo']))
+                        {
+                             //$photo=$prd->formatoutputphoto($arrproval['photo']);
+                             $photo=str_replace('.','',$arrproval['photo']);
+                             $photo=str_replace('-','_',$photo);
+                            $new=($arrproval['new']==1)?"<div class='new_sales'></div>":"";
+                            $hot=($arrproval['hot_products']==1)?"<div class='hit_sales'></div>":"";
+                            if(file_exists($root."/img/products/fsize1/".$photo."_ass.jpg"))
+                            {
+                                echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/".$photo."_ass.jpg' /></a></div>";
+                                echo "<div class='clear_both'></div>"; 
+                            }
+                            else
+                            {
+                                 echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                                 echo "<div class='clear_both'></div>";
+                            }
+                        }
+                        else
+                        {
+                             echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                             echo "<div class='clear_both'></div>";
+                        }
+                        //echo  $prd->kkzphoto($arrproval['photo'],$arrproval['id']);
+                            
+                        echo "<a class='name' href='/product/more/id/".$arrproval['id']."/from/kkz'>".$arrproval['name']."</a>";
+                        echo "<div class='after-name'></div>";
+                        echo $prd->getmanufname($arrproval['idmanufacturers']);
+                        $base_ed=$prd->getpricefor($arrproval['id_base_ed_iz']);
+                        if(!empty($base_ed))
+                        {
+                                echo "<br />";
+                                echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($arrproval['id']).' грн</div>';
+                        }
+                        if(!empty($arrproval['weight']))
+                        {
+                             echo "<div class='other'>Вес: ".$arrproval['weight']."</div>";
+                        }
+                        $weight = substr($arrproval['weight'],0,strpos($arrproval['weight'],'&plusmn;'));
+                        echo '<div class="clear_both"></div>';
+                        $flag=0;
+                         foreach($_SESSION['arrayorder'][$_SESSION['active']] as $ind=>$vol)
+                            {
+                                if($_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']==$arrproval['id'])
+                                {
+                                        echo '<div class="kkz-price-style f-l">Цена заказа: <span class="kkz-price">'.$prd->getuserpriceformat($arrproval['id'],$arrproval['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k']).' грн</span></div>';
+                                        echo "<div class='clear_both'></div>";
+                                        echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                                        echo '<input type="hidden" name="id" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id'].'"/>';
+                                        echo '<input type="button" class="kkz-plus-minus plus disabled" disabled="disabled"  /><input type="text" readonly  class="val kkz-kol-input" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k'].'"/><input type="button" class="kkz-plus-minus minus disabled" disabled="disabled"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arrproval['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']).'</span>';
+                                        echo '<a href="/cart" class="in-basket">В корзине</a></form></div>';
+                                        $flag=1;
+                                        break;
+                                }
+                            }
+                        
+                        if($flag==0)
+                        {
+                            echo '<div class="kkz-price-style f-l">Цена заказа: <span class="kkz-price">'.$prd->getuserpriceformat($arrproval['id'],$arrproval['user_ed_iz'],1).' грн</span></div>';
+                            echo "<div class='clear_both'></div>";
+                            echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                            echo '<input type="hidden" name="id" value="'.$arrproval['id'].'"/>';
+                            echo '<input type="button" class="kkz-plus-minus plus"  /><input type="text" readonly  class="val kkz-kol-input" value="1"/><input type="button" class="kkz-plus-minus minus"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arrproval['user_ed_iz'],$arrproval['id']).'</span>';
+                            echo '<span class="buy kkz-buy">Купить</span></form></div>';
+                        }
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                }
+?> 
+
+<div class="clear_both"></div>
+<!--<div class="info f-l">
+    *Под системой расчета в штуках подразумевается минимальный возможный вес покупки. Так например если минимальный вес составляет 400грн, а палка колбасы весит 800грн, вы получаете половину палки колбасы.   
+</div>
+<div class="float_right">
+    <div class="info-center-title f-l">Желаемый товар<div class="text">Напишите товар который вы хотели бы добавить на данную страницу</div></div>
+    <div class="f-l">
+        <textarea style="width:295px;min-width: 295px;max-width:295px;height:60px;min-height:60px;max-height:60px;padding: 0;"></textarea>
+        <div class=""><span class='send float_right'>Отправить</span></div>
+    </div>
+</div>-->
+ <div class="clear_both"></div>
+<div class="delim-sh"></div>
+ <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li >
+                    <div class="uderfooter_cust-li4-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/career">Карьера</a>
+                        <br /><br />
+                      Приглашаем на конкурсной основе новых сотрудников, желающих работать в успешной компании и профессиональном коллективе.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li7-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                 <li class="left">
+                     <div class="uderfooter_cust-li5-img"></div>
+                     <div class="underfooter-title">
+                         <a href="/assortment/full/">Ассортимент</a>
+                         <br><br>
+                         Торговый дом «Высший сорт» предлагает широкий выбор высококачественных колбасных изделий из отборного сырья от лучших производителей.
+                     </div>
+                 </li>
+                 <li class="left">
+                    <div class="uderfooter_cust-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/about">О компании</a>
+                        <br /><br />
+                         «Высший сорт» - успешная компания с многолетним опытом в сфере дистрибуции продуктов питания на территории Восточной Украины.
+                    </div>
+                </li>
+             </ul>
+             </div>
+
+ 
+</div>
+</div>
+</div>

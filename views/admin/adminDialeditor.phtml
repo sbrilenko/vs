@@ -1,0 +1,441 @@
+<?php
+    $db = db :: getInstance(); 
+    $root = $_SERVER['DOCUMENT_ROOT'];
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+    
+    if ($action != 'delete' and $action != 'edit' and $action != 'add' and $action != 'copy') header("Location: /admin/product");
+    
+    if ($action == 'delete')
+    {
+       /* $db -> query("SELECT * FROM dialphotos WHERE id = {$id}");
+        if ($db -> getCount())
+        {
+            $del_photos=$db -> getValue();
+            foreach($del_photos as $del_photos_index=>$del_photos_val)
+            {
+                if (@unlink($root.'/img/dial/1000/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg'))
+                {
+                    @unlink($root.'/img/dial/1000/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg');
+                }
+                if (@unlink($root.'/img/dial/1240/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg'))
+                {
+                    @unlink($root.'/img/dial/1240/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg');
+                }
+                if (@unlink($root.'/img/dial/1320/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg'))
+                {
+                    @unlink($root.'/img/dial/1320/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg');
+                }
+                if (@unlink($root.'/img/dial/1400/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg'))
+                {
+                    @unlink($root.'/img/dial/1400/'.$del_photos_val['md5_mictotime'].'_'.$del_photos_val['id'].'.jpg');
+                }
+                
+                $db -> query("DELETE FROM dialphotos WHERE id = {$del_photos_val[id]}");
+            }
+             
+        }*/
+        
+        $db -> query("UPDATE dial SET archive=1 WHERE id = {$id}");
+        header("Location: /admin/dial");
+        exit();
+    }
+    if ($action == 'edit')
+    {
+        $db -> query("SELECT * FROM dial WHERE id = {$id}");
+        $product = $db -> getRow();
+        if (!$product) header("Location: /admin/dial");  
+        //удалим не нужные (временные) фото
+        $db -> query("SELECT md5_mictotime FROM dialphotos WHERE id_dial = {$product[id]} LIMIT 1");
+        if ($db -> getCount()>0)
+        {
+            $db-> query("SELECT md5_mictotime,id,temp FROM dialphotos WHERE md5_mictotime='".$db -> getValue()."'");
+            if ($db -> getCount()>0)
+            {
+                $tmp=$db->getArray();
+                foreach($tmp as $tmp_index=>$tmp_val)
+                {
+                    if($tmp_val['temp']==0)
+                    {
+                        if (@unlink($root.'/img/dial/1000/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg'))
+                        {
+                            @unlink($root.'/img/dial/1000/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg');
+                        }
+                        if (@unlink($root.'/img/dial/1240/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg'))
+                        {
+                            @unlink($root.'/img/dial/1240/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg');
+                        }
+                        if (@unlink($root.'/img/dial/1320/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg'))
+                        {
+                            @unlink($root.'/img/dial/1320/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg');
+                        }
+                        if (@unlink($root.'/img/dial/1400/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg'))
+                        {
+                            @unlink($root.'/img/dial/1400/'.$tmp_val['md5_mictotime'].'_'.$tmp_val['id'].'.jpg');
+                        }
+                        
+                        $db -> query("DELETE FROM dialphotos WHERE id = {$tmp_val[id]}");
+                    }
+                    
+                }
+            }
+            
+            
+        }
+    }
+    else $action = 'add';
+    
+    $sFirm = ($product['idFirm']) ? $DLL -> greateSelect('sfirms','',$product['idFirm'],'width:350px;float:left;') : $sFirm = $DLL -> greateSelect('sfirms','Выберите производителя',0,'width:350px;float:left;');
+    $sSection = ($product['idSection']) ? $DLL -> greateSelect('categoty','',$product['idSection'],'width:350px;float:left;') : $DLL -> greateSelect('category','Выберите категорию продукции',0,'width:350px;float:left;') ;
+    $sGroup = ($product['idGroup']) ? $DLL -> greateSelect('sgroups','',$product['idGroup'],'width:350px;float:left;') : $DLL -> greateSelect('sgroups','Выберите группу',0,'width:350px;float:left;','');
+    $sSubgroup = ($product['idSubgroup']) ? $DLL -> greateSelect('ssubgroups','',$product['idSubgroup'],'width:350px;float:left;') : $DLL -> greateSelect('ssubgroups','Выберите подгруппу',0,'width:350px;float:left;','');
+    
+    $checked = ($product['presence']) ? 'checked="checked"' : null;
+    $checkedN = ($product['new']) ? 'checked="checked"' : null;
+    $checkedB = ($product['bestseller']) ? 'checked="checked"' : null;
+    $checkedE = ($product['event']) ? 'checked="checked"' : null;
+    if ($product['newOrSecond']) 
+    {
+        $checkedSecond = 'checked="checked"';
+        $checkedNew = null;
+    }
+    else 
+    {
+        $checkedNew = 'checked="checked"';
+        $checkedSecond = null;
+    }
+
+    $checkedP1 = ($product['presence'] == 0) ? 'checked="checked"' : null;;
+    $checkedP2 = ($product['presence'] == 1) ? 'checked="checked"' : null;
+    $checkedP3 = ($product['presence'] == 2) ? 'checked="checked"' : null;
+    $checkedP4 = ($product['presence'] == 3) ? 'checked="checked"' : null;
+    $checkedShow = ($product['vis']) ? 'checked="checked"' : null;
+    $checkedShow = ($action == 'add') ? 'checked="checked"' : $checkedShow;
+?>
+<tr>
+<td class='head'>
+<?php
+    $tut = 'dial';
+    include "menu.php"; 
+    $form = new ad();
+    $idNext = ($db -> last('dial') + 1);
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="back"><a href="/admin/dial">НАЗАД</a></div>
+        <div class="title"><?=($action == 'add')?'Добавление':'Редактирование';?> набора</div>
+		<?php
+        ($action == 'add')?$page -> setTitle("Добавление набора | высший сорт"):$page -> setTitle("Редактирование набора | высший сорт");
+        echo '<input type="hidden" name="whatPageEditor" value="productEditor">';
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/dial/dial.php','console.log(jqForm);',"
+        console.log(responseText)
+        //return false;
+        if (responseText.indexOf('error') == -1) 
+        {
+            var m = 'Товар сохранен!\\nНажмите:\\n   OK - для возврата ко всем товарам.\\n   Отмена - продолжить редактирование этого товара.';
+            if (confirm(m)) location.href='/admin/dial';
+            ".(($action == 'add') ? 'else location.href="/admin/dialEditor/edit/'.$idNext.'";' : "" )."  
+        }
+        else
+        {
+            $('form#form input[type=file]').attr('disabled',false);
+        	alert(responseText.replace(/<.*?>/g, ''));
+        }");
+        if($action == 'edit')
+        {
+            $btn = 'edit';
+            echo $form->input_('hidden','id','','',$id,'',0);
+        }
+        else
+        {
+            $btn = 'add';
+        }
+        echo $form->input_('hidden','action','','',$action,'',0);
+        if($action=='edit')
+        {
+            $sql_p="SELECT md5_mictotime FROM dialphotos WHERE id_dial=".$product['id']." AND temp=1";
+            $db->query($sql_p);
+            if($db->getCount()>0)
+            {
+                echo $form->input_('hidden','temp','','',$db->getValue(),'',0);
+            }
+            else
+            {
+                echo $form->input_('hidden','temp','','',md5(microtime()),'',0);
+            }
+        }
+        else
+        {
+            echo $form->input_('hidden','temp','','',md5(microtime()),'',0);
+        }
+        echo $DLL -> getCreateUpdate($product['idUserCreate'],$product['dtCreate'],$product['idUserUpdate'],$product['dtUpdate']);
+        echo "<table style='width:100%;' class='productEdit'>";
+            
+
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Показывать товар на сайте:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','vis','','','','float:left;',0,'','','',$checkedShow);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('*Название:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','name','','',$product['name'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Новинка:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','new','','','','float:left;',0,'','','',$checkedN);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Хит продаж:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','bestseller','','','','float:left;',0,'','','',$checkedB);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Акция:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','event','','','','float:left;',0,'','','',$checkedE);
+            echo "</td></tr>";
+            
+            echo "<tr><td width='300'>";
+            echo $form -> titleandhelp('Наличие:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('checkbox','presence','','','1','margin:3px 4px 10px 4px',0,'','','',$checkedP2).' - есть в наличии';
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Приоритет:','Порядок отображения на сайте<br />Чем больше число, тем выше товар','text-align:left');
+            echo "</td><td>";
+            echo $form -> select('priority','priority','','width:350px;float:left;',array(1 => 1, 2 => 2, 3 => 3 , 4 => 4, 5 => 5),'','',$product['priority'],$product['priority']);
+            echo "</td></tr>";
+            
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Цена:','Только цифры!','text-align:left');
+            echo "</td><td>";
+            echo "<div style='float:left;padding: 3px 7px 0 0;'>за штуку </div>".$form -> input_('text','price','','onlynumbers',$product['price'],'width:50px;float:left;',0)."<div style='float:left;padding: 3px 7px 0 7px;'> грн, весом</div>";
+            echo $form -> input_('text','weight','','onlynumbers',$product['weight'],'width:50px;float:left;',0)."<div style='float:left;padding: 3px 7px 0 7px;'>в</div>";
+            $db->query("SELECT * FROM izm");
+            if($db->getCount()>0)
+            {
+                $arr=$db->getArray();
+            }
+            echo $form -> select('weight_val','weight_val','','margin:2px 0 0 7px;width: 50px;float: left;padding: 0;height: 22px;',array($arr[0]['name'] => $arr[0]['name'], $arr[1]['name'] => $arr[1]['name'], $arr[2]['name'] => $arr[2]['name'] , $arr[3]['name'] => $arr[3]['name'], $arr[4]['name'] => $arr[4]['name']),'','',$product['weight_val'],$product['weight_val']);
+            
+            
+            echo "</td></tr>";
+            
+             echo "<tr><td>";
+            echo $form -> titleandhelp('Артикул:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','article','','',$product['article'],'width:350px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Текстовое описание:','','text-align:left');
+            echo "</td><td>";
+            $description = $form -> replaceToDraw($product['description']);
+            $form -> drawEditor('description', $description,1,1,0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Состав:',$text_sostav,'text-align:left');
+            echo "</td><td>";
+            echo "<div id='sostav'>";
+            if($product['id'])
+            {
+                $sql_sel_sostav="SELECT * FROM sostav WHERE archive=0 AND id_dial=".$product['id'];
+            $db->query($sql_sel_sostav);
+            if($db->getCount()>0)
+            {
+                $arr_sostav=$db->getArray();
+                foreach($arr_sostav as $arr_sostav_index=>$arr_sostav_val)
+                {
+                    //достаем конкретный товар из ассортимента
+                    $sql_get_pr="SELECT id,nameSearch,idGroup,idSubgroup,idFirm,category FROM products WHERE id=".$arr_sostav_val['id_ass'];
+                    $db->query($sql_get_pr);
+                    if($db->getCount()>0)
+                    {
+                        $sql_get_pr_array=$db->getArray();
+                        $nameSearch=$sql_get_pr_array[0]['nameSearch'];
+                        //idFirm
+                        $sql_getFirm="SELECT name FROM sfirms WHERE id=".$sql_get_pr_array[0]['idFirm'];
+                        $db->query($sql_getFirm);
+                        if($db->getCount()>0)
+                        {
+                            $firm=$db->getValue();
+                        }
+                        else
+                        {
+                            $firm="";
+                        }
+                        //category
+                        $sql_getcategory="SELECT name FROM category WHERE id=".$sql_get_pr_array[0]['category'];
+                        $db->query($sql_getcategory);
+                        if($db->getCount()>0)
+                        {
+                            $category=$db->getValue();
+                        }
+                        else
+                        {
+                            $category="";
+                        }
+                        
+                        //idGroup
+                        $sql_getsgroups="SELECT name FROM sgroups WHERE id=".$sql_get_pr_array[0]['idGroup'];
+                        $db->query($sql_getsgroups);
+                        if($db->getCount()>0)
+                        {
+                            $sgroups=$db->getValue();
+                        }
+                        else
+                        {
+                            $sgroups="";
+                        }
+                        
+                        //idsubGroup
+                        $sql_getssubgroups="SELECT name FROM ssubgroups WHERE id=".$sql_get_pr_array[0]['idSubgroup'];
+                        $db->query($sql_getssubgroups);
+                        if($db->getCount()>0)
+                        {
+                            $ssubgroups=$db->getValue();
+                        }
+                        else
+                        {
+                            $ssubgroups="";
+                        }
+                        
+                        //img
+                        $sql_img="SELECT md5_mictotime,id FROM productsphotos WHERE id_product=".$sql_get_pr_array[0]['id'];
+                        $db->query($sql_img);
+                        if($db->getCount()>0)
+                        {
+                            $sql_img_array=$db->getArray();
+                            $img="<img style='width: 185px;height: 102px;' src='/img/products/1000/".$sql_img_array[0]['md5_mictotime']."_".$sql_img_array[0]['id'].".jpg' />";
+                        }
+                        else
+                        {
+                            $img="<div style='width: 127px;height: 102px;'></div>";
+                        }
+                    }
+                    else
+                    {
+                        $nameSearch="";
+                        $firm="";
+                        $category="";
+                        $sgroups="";
+                        $ssubgroups="";
+                        $img="<div style='width: 127px;height: 102px;'></div>";
+                    }
+                    echo "<table class='searchtable'><tbody><tr><td rowspan='6'>".$img."</td></tr>";
+                    echo (!empty($nameSearch))?"<tr class='border-top'><td colspan='2'><b>Название</b>:".$nameSearch."</td></tr>":"<tr><td colspan='2'></td></tr>";
+                    echo (!empty($firm))?"<tr><td colspan='2'><div><b>Производитель</b>: ".$firm."</div></td></tr>":"<tr><td colspan='2'></td></tr>";
+                    echo (!empty($category))?"<tr><td colspan='2'><div><b>Категория</b>: ".$category."</div></td></tr>":"<tr><td colspan='2'></td></tr>";
+                    echo (!empty($sgroups))?"<tr><td colspan='2'><div><b>Продукция</b>: ".$sgroups."</div></td></tr>":"<tr><td colspan='2'></td></tr>";
+                    echo (!empty($ssubgroups))?"<tr><td colspan='2'><div><b>Вид родукции</b>: ".$ssubgroups."</div></td></tr>":"<tr><td colspan='2'></td></tr>";
+                    echo "<tr><td colspan='3'><input type='hidden' name='sostav".$arr_sostav_val['id_ass']."' value='".$arr_sostav_val['id_ass']."'></td></tr><tr class='vidvis'><td colspan='3'><table><tbody><tr><td style='padding:6px 0 0 4px;width:25px;'>Вид</td><td><select name='narezannot".$arr_sostav_val['id_ass']."' style='margin-left:10px;width:150px;'>";
+                    if($arr_sostav_val['narezannot']==0)
+                    {
+                        echo "<option value='0' selected='selected'>Не нарезан</option><option value='1'>Нарезан</option>";
+                    }
+                    else
+                    {
+                        echo "<option value='0'>Не нарезан</option><option selected='selected' value='1'>Нарезан</option>";
+                    }
+                    echo "</select></td><td style='width:25px;padding:6px 0 0 4px;'>Вес</td><td>";
+                    if($arr_sostav_val['vesnarez']==0)
+                    {
+                        echo "<input name='vesnarez".$arr_sostav_val['id_ass']."' style='margin-top: 4px;margin-left:10px;width:150px;'></td><td>";
+                    }
+                    else
+                    {
+                        echo "<input name='vesnarez".$arr_sostav_val['id_ass']."' style='margin-top: 4px;margin-left:10px;width:150px;' value='".$arr_sostav_val['vesnarez']."'></td><td>";
+                    }
+                    echo "<select name='narezed".$arr_sostav_val['id_ass']."' style='width:50px;'>";
+                    switch($arr_sostav_val['ed'])
+                    {
+                        case 1:
+                        echo "<option value='1' selected='selected'>кг.</option><option value='2'>гр.</option><option value='3'>л.</option><option value='4'>шт.</option><option value='5'>мл.</option>";
+                        break;
+                        case 2:
+                        echo "<option value='1' >кг.</option><option value='2' selected='selected'>гр.</option><option value='3'>л.</option><option value='4'>шт.</option><option value='5'>мл.</option>";
+                        break;
+                        case 3:
+                        echo "<option value='1' >кг.</option><option value='2' >гр.</option><option value='3' selected='selected'>л.</option><option value='4'>шт.</option><option value='5'>мл.</option>";
+                        break;
+                        case 4:
+                        echo "<option value='1' >кг.</option><option value='2' >гр.</option><option value='3' >л.</option><option value='4' selected='selected'>шт.</option><option value='5'>мл.</option>";
+                        break;
+                        case 5:
+                        echo "<option value='1' >кг.</option><option value='2' >гр.</option><option value='3' >л.</option><option value='4' >шт.</option><option value='5' selected='selected'>мл.</option>";
+                        break;
+                    }
+                    echo "</select></td></tr></tbody></table></td></tr><tr><td colspan='3' style='text-align:center;'><input type='button' class='removetosostav' value='убрать из состава' data-id='".$arr_sostav_val['id_ass']."'></td></tr></tbody></table>";
+                    
+                }
+                
+                
+            }
+            }
+            echo "</div>";
+            echo "<table style='width:100%;background-color: #BBB9B9;'>";
+            echo "<tr>";
+            echo "<td style='text-align:center;font-weight:bold;'>ПОИСК ПО АССОРТИМЕНТУ";
+            
+            echo "</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td>";
+            echo $form->input_('checkbox','nameart','','','','float:left;',0,'','','','disabled="disabled"');
+            echo $form->input_('text','nametosearch','','','','float:left;width:350px;',0,'','','','');
+            echo $form->input_('button','searchart','','','Поиск по названию','float:left;',0,'','','','');
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+            
+            
+            //$DLL -> getBlockForSearchingProducts('Поиск:',$product['attributes']);
+            /*$db->query("SELECT * FROM izm");
+            if($db->getCount()>0)
+            {
+                $arr=$db->getArray();
+            }
+            echo $form -> select('weight_nabor','weight_nabor','','width:350px;float:left;',array($arr[0]['name'] => $arr[0]['name'], $arr[1]['name'] => $arr[1]['name'], $arr[2]['name'] => $arr[2]['name'] , $arr[3]['name'] => $arr[3]['name'], $arr[4]['name'] => $arr[4]['name']),'','',$product['weight_nabor'],$product['weight_nabor']);
+            */
+            echo "<div id='searchResult'></div>";
+            echo "</td></tr>";
+            
+            
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Фотографии',$text_p_desc,'text-align:left');
+            echo "</td><td>";
+            echo $form->input_('file','photo','photo','','','','image/jpeg',0);
+            echo $form->input_('button','load_image_dial','load_image_dial','',$text_load_i,'','');
+            echo "<br /><span id='img_loader_photo_preview'></span>";
+            echo "<br /><span id='loaded_image_preview'>";
+            if(!empty($product['id']))
+            {
+                $sql_p="SELECT md5_mictotime FROM dialphotos WHERE id_dial=".$product['id'];
+                $db->query($sql_p);
+                if($db->getCount()>0)
+                {
+                    $md5=$db->getValue();
+                    $DLL -> drowPhotoBlockDial($md5,1,$product['id']);
+                }
+            }
+            echo"</span>";
+            echo "</td></tr>";
+        echo "</table>";
+        echo $form->input_('submit',$btn,$btn,'btnSave','Сохранить','');
+        echo $form->forme();
+        ?>
+    </td>
+  </tr>

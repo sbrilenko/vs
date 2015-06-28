@@ -1,0 +1,402 @@
+<?
+session_start();
+$page->addScript('js/jquery-ui_1.9.1.js');
+$page->addCss('css/jquery-ui-1.9.1.css');
+require_once 'lib/class.product.php';
+$param=$controller->getParam(1);
+if(!empty($param) AND isset($_SESSION['client']['id']))
+{
+    $arrayname=array();
+    $arrayorder=array();
+    $client=array();
+    $sql="SELECT * FROM orders WHERE idkkz='".$param."' AND idclient='".$_SESSION['client']['id']."' ORDER BY datetime ASC";
+    $db->query($sql);
+    if($db->getCount()>0)
+    {
+        $arr=$db->getArray();
+        for($i=1;$i<=20;$i++)
+        {
+            array_push($arrayname,"Имя(".$i.")");
+            array_push($arrayorder,array());
+        }
+        foreach($arr as $index=>$avl)
+        {
+            $arrayname[$index]=$avl['note'];
+            $sql="SELECT * FROM compositionoforder WHERE idorder='".$avl['id']."'";
+            $db->query($sql);
+            if($db->getCount()>0)
+            {
+                $arr_cur_order=$db->getArray();
+                foreach($arr_cur_order as $arr_cur_order_index=>$arr_cur_order_val)
+                {
+                    $factor_user=$prd->getuserfactor($arr_cur_order_val['id_ed_iz'],$arr_cur_order_val['idgoods']);
+
+                    //есть ли такой товар еще в базе
+                    $sql_get_good="SELECT * FROM goods WHERE id='".$arr_cur_order_val['idgoods']."'";
+                    $db->query($sql_get_good);
+                    if($db->getCount()>0)
+                    {
+                        array_push($arrayorder[$index],array('k'=>$arr_cur_order_val['count']/$factor_user,'id'=>$arr_cur_order_val['idgoods'],'price'=>$prd->priceofbaseediz($arr_cur_order_val['idgoods'])));
+                    }
+                }
+
+            }
+        }
+    }
+    $_SESSION['arrayname']=$arrayname;
+    $_SESSION['arrayorder']=$arrayorder;
+    /*echo "<br />|<br />";
+    print_r($arrayorder);
+    echo "<br />|<br />";
+    print_r($_SESSION['arrayorder']);*/
+}
+?>
+<div id="secret"></div>
+<div class="clear_both"></div>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Оформление заказа</h1>
+            <div class="before-kkz-box-block"></div>
+            <ul class="cart-top-blocks">
+                <li class="f-l f">
+				<div class="uderfooter-li3-img" style="background-position: right top;">
+                    <div class="underfooter-title f-l cart_block"  >
+                        <a href="/kkz">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div></div>
+                    <!--div class="underfooter-title-cart-set f-l">
+                        <a href="/set">Готовые наборов</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div-->
+                </li>
+                <li class="left s">
+				<div class="underfooter-title-cart-delivery">
+                    <div class="underfooter-title cart_block_2" >
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+					
+                    
+                </li>
+             </ul>
+            <?php include $root."/lib/dcardin.php";?>
+            <div class="clear_both"></div>
+            <div class="delim-sh-top-cart"></div>
+            <div class="clear_both"></div>
+ <?php
+   echo "<div class='clear_both'></div>";
+if(!empty($_SESSION['arrayorder']))
+{
+    //print_r($_SESSION['arrayorder']);
+    echo "<ul class='carting'>";
+    $alltotal=0;
+    foreach($_SESSION['arrayorder'] as $index=>$val)
+    {
+        $total=0;
+        if(!empty($_SESSION['arrayorder'][$index]))
+        {
+            echo "<li>";
+            echo "<div class='f-l'><input class='user cart-input' name='user' data-n='".$index."' type='text' value='".$_SESSION['arrayname'][$index]."'/></div>";
+            echo "<div style='clear:both;'></div>";
+            echo "<ul class='order-ul'>";
+            foreach($_SESSION['arrayorder'][$index] as $in=>$v)
+            {
+                echo "<li style='width:100%;' class='prorder'>";
+                echo "<div class='f-l pp'>";
+                echo $in+1;
+                echo "</div>";
+                $sql="SELECT * FROM goods WHERE id='".$v['id']."'";
+                $db->query($sql);
+                if($db->getCount()>0)
+                {
+                    $thispr=$db->getArray();
+                    $photo=str_replace('.','',$thispr[0]['photo']);
+                    $photo=str_replace('-','_',$photo);
+                    if(file_exists($root.'/img/products/fsize1/'.$photo.'_or'.'.jpg'))
+                    {
+                        echo "<div class='f-l img'><img src='../img/products/fsize1/".$photo."_or".".jpg' /></div>";
+                    }
+                    else
+                    {
+                       if($thispr[0]['setofgoogs']==1)
+                       {
+                           echo "<div class='f-l img'><img src='../img/products/fsize1/nabori-empty_or.png' /></div>";
+                       }
+                       else
+                       {
+                           echo "<div class='f-l img'><img src='../img/products/fsize1/good-empty-or.png' /></div>";
+                       }
+
+                    }
+                    $setorkkz=($thispr[0]['setofgoogs']==1)?"set":"kkz";
+                    echo "<div class='f-l name'>
+                          <div class='w-te'><a href='/product/more/id/".$thispr[0]['id']."/from/".$setorkkz."/activate/".($index+1)."'>".$thispr[0]['name']."</a>";
+                    $sql_firm="SELECT name,link FROM manufacturers WHERE id='".$thispr[0]['idmanufacturers']."'";
+                    $db->query($sql_firm);
+                    if($db->getCount()>0)
+                    {
+                        $firm=$db->getArray();
+                        if(!empty($firm[0]['link']))
+                        {
+                            echo "<div class='from'><a href='".$firm[0]['link']."'>".$firm[0]['name']."</a></div></div></div>";
+                        }
+                        else
+                        {
+                            echo "<div class='from'><span>".$firm[0]['name']."</span></div></div></div>";  
+                        }
+                        
+                    }
+                    echo "<div class='f-l weight'>";
+                    echo "<div class='w-te'>";
+                    
+                    $base_ed=$prd->getpricefor($thispr[0]['id_base_ed_iz']);
+                    if(!empty($base_ed))
+                    {
+                            echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($thispr[0]['id']).' грн</div>';
+                    }
+                    $total+=$prd->getuserpriceformat($thispr[0]['id'],$thispr[0]['user_ed_iz'],$v['k']);
+                    //$total+=number_format($v['k']*$factor*$price, 2, '.', '');
+                    /*$sql_g="SELECT user_ed_iz FROM goods WHERE id='".$thispr[0]['id']."'";
+                    $db->query($sql_g);
+                    if($db->getCount()>0)
+                    {
+                        $user_ed_iz=$db->getValue();
+                        $sql_price_for="SELECT * FROM unitsofgoods WHERE deleted=0 AND id='".$user_ed_iz."' AND idgoods='".$thispr[0]['id']."'";
+                        $db->query($sql_price_for);
+                        if($db->getCount()>0)
+                        {
+                            $arr_ed=$db->getArray();
+                            $factor=$arr_ed[0]['factor'];
+                            $sql_price="SELECT * FROM priceofgoods WHERE deleted=0 AND idgoods='".$thispr[0]['id']."'";
+                            $db->query($sql_price);
+                            if($db->getCount()>0)
+                            {
+                                $arr_p=$db->getArray();
+                                $price=$arr_p[0]['price'];
+                                echo '<div class="other">Цена за '.$arr_ed[0]['name'].': '.number_format(1*$factor*$price, 2, '.', '').' грн</div>';
+                                $total+=number_format($v['k']*$factor*$price, 2, '.', '');
+                            }
+                        }
+                    }*/
+                    if(!empty($thispr[0]['weight']))
+                    {
+                         echo "<div class='from'>Вес: ".$thispr[0]['weight']."</div>"; 
+                    }
+                      
+                    echo "</div></div>";
+                    echo "<div class='f-l plus-minus'>";
+                    echo "<form method='post'><input type='hidden' name='id' value='".$thispr[0]['id']."'/><input type='hidden' name='userid' value='".$index."'/><input type='button' class='plus  kkz-plus-minus f-l'  /><div type='text' style='border:1px solid grey;' class='val count f-l'>".$v['k']."</div><input type='button'  class='minus kkz-plus-minus f-l' /></form>";
+                    echo "</div>";
+                    echo "<div class='f-l price'><div class='w-te'>";
+                    /*$sql_g="SELECT user_ed_iz FROM goods WHERE id='".$thispr[0]['id']."'";
+                    $db->query($sql_g);
+                    if($db->getCount()>0)
+                    {
+                        $user_ed_iz=$db->getValue();
+                        $sql_price_for="SELECT * FROM unitsofgoods WHERE deleted=0 AND id='".$user_ed_iz."' AND idgoods='".$thispr[0]['id']."'";
+                        $db->query($sql_price_for);
+                        if($db->getCount()>0)
+                        {
+                            $arr_ed=$db->getArray();
+                            $factor=$arr_ed[0]['factor'];
+                            $sql_price="SELECT * FROM priceofgoods WHERE deleted=0 AND idgoods='".$thispr[0]['id']."'";
+                            $db->query($sql_price);
+                            if($db->getCount()>0)
+                            {
+                                $arr_p=$db->getArray();
+                                $price=$arr_p[0]['price'];
+                                echo "<span class=''><span class='stoimost_none'>Стоимость: </span><span class='price_'>".number_format($v['k']*$factor*$price, 2, '.', '')."</span></span> грн";
+                            }
+                        }
+                    }*/
+                    echo "<span class='stoimost_none'>Стоимость: </span><span class='price_'>". $prd->getuserpriceformat($thispr[0]['id'],$thispr[0]['user_ed_iz'],$v['k'])."</span> грн";
+                            
+                   
+                    echo "</div></div>";
+                    //echo "<div class='f-l'>";
+                    echo "<div class='f-l delgood depprouser' data-user='".$index."' data-id='".$v['id']."'>";
+                    //echo "<div class='deltovar_none f-l'>Убрать товар</div>";
+                    echo "</div>";
+                    //echo "</div>";
+                    echo "<div style='clear:both;'></div>";
+                }
+                 echo "</li>";
+            }
+            echo "</ul>";
+            echo "<div><div style='margin:10px 0;width:100%;border-top:1px solid #d2d2d2;height:0px;'></div></div>";
+            echo "<ul class='after-name-order-cart'>";
+                echo "<li>";
+                     echo "<div class='f-l pp'>&nbsp;";
+                        echo "</div>";
+                        echo "<div class='f-l img'>&nbsp;";
+                        echo "</div>";
+                        echo "<div class='f-l add'>";
+                            echo "<div class='f-l cart-add-style'>Добавить: </div><div class='f-l'><a class='cart-add left' href='/kkz/activate/".($index+1)."'>Товар</a></div><!--<div class='f-l'><a class='cart-add left' href='/set/activate/".$index."'>Набор</a></div>-->";
+                        echo "</div>";
+                        
+                        echo "<div class='f-r delall cart-del-all' data-id='".$index."'></div>";
+                        echo "<div class='f-r'>";
+                            echo "<div class='f-l itogo-all'>Итого: <span class='thisusertotal'><span class='price'>".number_format($total,2, '.', '')."</span> грн</span></div>";
+                        echo "</div>";
+                        echo "<div class='clear_both'></div>";
+                        echo "<div class='after-name-cart-he'></div>";
+                echo "</li>";
+                
+            echo "</ul>";
+           
+            echo "</li>";
+            $alltotal+=$total;
+        }
+        
+    }
+    echo "</ul>";
+    echo "<div class='clear_both'></div>";
+    echo "<div class='cart-total-price'>Общая сумма заказа - <span class='alltotal'>".number_format($alltotal,2, '.', '')." грн</span></div>";
+    echo "<div style='clear:both;'></div>";
+    echo "<div class='under-shadow'></div>";
+    echo "<div style='clear:both;'></div>";
+   
+    echo "<div class='oforml-block'>";
+    echo "<div class='f-l left-block'>";
+        if(empty($_SESSION['client']['nc']) AND !empty($_SESSION['client']['p']) )
+        {
+            echo "<div class='title'>Оформление заказа</div>";
+            echo '<form method="post" class="p-r" ><input class="saminput" readonly name="pactive" type="text" value="'.$_SESSION['client']['p'].'" /></form>';
+            
+            echo "<div class='display_none'>";
+            echo "<div class='label'>Контактный телефон</div>";
+            echo '<input class="phone" name="phone" type="text" value="" />';
+            echo "</div>";
+            
+            echo "<div class='label'>ФИО <span>(как к вам обращаться)</span></div>";
+            echo "<div><input type='text' class='fio' name='fio' value='".$_SESSION['client']['n']."' /></div>";
+            echo "<div class='label'>Адрес доставки</div>";
+            echo "<div><textarea style='width:100%;' name='address'>".$_SESSION['client']['ad']."</textarea></div>";
+        }
+        else
+        if(!empty($_SESSION['client']['nc']))
+        {
+            echo "<div class='title'>Оформление заказа</div>";
+            echo '<form method="post" class="p-r" ><input class="saminput" readonly name="nc" type="text" value="'.$_SESSION['client']['nc'].'" /></form>';
+            
+            echo "<div>";
+            echo "<div class='label'>Контактный телефон</div>";
+            echo '<input class="phone" name="phone" type="text" value="'.$_SESSION['client']['p'].'" />';
+            echo "</div>";
+            
+            echo "<div class='label'>ФИО <span>(как к вам обращаться)</span></div>";
+            echo "<div><input type='text' class='fio' name='fio' value='".$_SESSION['client']['n']."' /></div>";
+            echo "<div class='label'>Адрес доставки</div>";
+            echo "<div><textarea style='width:100%;' name='address'>".$_SESSION['client']['ad']."</textarea></div>";
+        }
+        else
+        if(empty($_SESSION['client']))
+        {
+            echo "<div class='title'>Оформление заказа</div>";
+            echo '<div class="after-disc-card-text">Введите <span class="nodotted thiso">номер телефона</span> или <span class="dotted thist">номер карты</span></div>';
+           echo '<form method="post" class="p-r"><input class="saminput" name="in" type="text" value="" /></form>';
+            echo "<div class='display_none'>";
+            echo "<div class='label'>Контактный телефон</div>";
+            echo '<input class="phone" name="phone" type="text" value="" />';
+            echo "</div>";
+            echo "<div class='label'>ФИО <span>(как к вам обращаться)</span></div>";
+            echo "<div><input type='text' class='fio' name='fio' /></div>";
+            echo "<div class='label'>Адрес доставки</div>";
+            echo "<div><textarea style='width:100%;' name='address'></textarea></div>";
+        }
+            
+        echo "</div>";
+        echo "<div class='f-r right-block'>";
+            echo "<div class='title'>Условия доставки</div>";
+                echo "<div class='divback'>В ассортименте колбасных изделий особое место занимают копченые колбасы. К полукопченым колбасным изделиям относят полукопченые колбасы, выработанные по традиционной технологии и полукопченые колбасы типа «Дрогобычская классика».
+    <br /><br />
+    К полукопченым колбасным изделиям относят полукопченые колбасы, выработанные по традиционной технологии 
+    и полукопченые колбасы типа «Дрогобычская классика». 
+    В ассортименте колбасных изделий особое место занимают копченые колбасы. К полукопченым колбасным изделиям относят полукопченые колбасы, выработанные по традиционной.</div>";
+    echo "</div>";
+    echo "</div>";
+    echo "<div style='clear:both;'></div>";
+    $isorder=0;
+    if(!empty($_SESSION['arrayorder']))
+    {
+        for($i=0;$i<20;$i++)
+        {
+            if(!empty($_SESSION['arrayorder'][$i]))
+            {
+                $isorder=1;break;
+            }
+        }
+    }
+    if($isorder==1 AND !empty($_SESSION['client']['id']))
+    {
+        echo "<div class='readysend'>Оформить заказ</div>";
+    }
+}
+else
+{
+    echo "ничего не заказано";
+}      
+ echo "<div class='margin_auto width4size'>";
+ $page->addScript('js/jquery.form.js','js/mask.js','js/oform.js');
+?> 
+<div class="clear_both"></div>
+<!--<div class="info f-l">
+    *Под системой расчета в штуках подразумевается минимальный возможный вес покупки. Так например если минимальный вес составляет 400грн, а палка колбасы весит 800грн, вы получаете половину палки колбасы.   
+</div>
+<div class="float_right">
+    <div class="info-center-title f-l">Желаемый товар<div class="text">Напишите товар который вы хотели бы добавить на данную страницу</div></div>
+    <div class="f-l">
+        <textarea style="width:295px;min-width: 295px;max-width:295px;height:60px;min-height:60px;max-height:60px;padding: 0;"></textarea>
+        <div class=""><span class='send float_right'>Отправить</span></div>
+    </div>
+</div>-->
+</div>
+        </div>
+<div class="clear_both"></div>
+            <div class="delim-sh"></div>
+             <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li >
+                    <div class="uderfooter_cust-li4-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/career">Карьера</a>
+                        <br /><br />
+                      Приглашаем на конкурсной основе новых сотрудников, желающих работать в успешной компании и профессиональном коллективе.
+                    </div>
+                </li>
+               <li class="left">
+                    <div class="uderfooter-li7-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/kkz">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter_cust-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/about">О компании</a>
+                        <br /><br />
+                         «Высший сорт» - успешная компания с многолетним опытом в сфере дистрибуции продуктов питания на территории Восточной Украины.
+                    </div>
+                </li>
+             </ul>
+             </div>
+        
+</div>
+
+</div>

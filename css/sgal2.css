@@ -1,0 +1,129 @@
+html{ 
+    width:100%;
+    height:100%;
+    font-size: 100%;
+}
+.galery_back.z_index_10000
+{
+	z-index:10000;
+}
+.z_index_10001
+{
+	z-index:10001;
+}
+
+.galery_back
+{
+	z-index: 9998;
+	opacity:0.5;
+	filter:alpha(opacity=50);
+	top: 0;
+	left: 0;
+	width:100%;
+	height:100%;
+	background: #666 url('../img/gal_back.png') 50% 50% repeat;
+	
+}
+.gall_position
+{
+	top: 50%;
+	left: 50%;
+	margin-top:-321px;
+	margin-left:-582px;
+       border: 1px solid #c7c7ad;
+    padding:33px 70px;
+       background-color:white;
+}
+.photo_gallery,.object-video
+{
+	width:1024px;
+	height:576px;
+	border: 1px solid #c7c7ad;
+    
+}
+.gal_arrow,.top_right_arrow .gal_arrow
+{
+	background:transparent url('../img/fsize2/left-arrow.png') no-repeat center 0;
+	width:57px;
+	height:42px;
+	margin:25px 5px;
+}
+.gal_arrow_right_pos
+{
+	background-position:center -46px;
+}
+.close_photos_gal
+{
+background: transparent url('../img/fsize2/close.png') no-repeat !important;
+width: 30px !important;
+height: 29px !important;
+background-position: center -1px;
+margin-left: 20px !important;
+}
+.close_photos_gal:hover
+{
+	cursor:pointer;
+	background-position: center -29px !important;
+}
+
+.preloader
+{
+	background:transparent url('../img/fsize2/loading.gif') no-repeat;
+	width:1024px;
+	height:576px;
+	z-index:-1; 
+	opacity:0.3;
+	filter:alpha(opacity=30);
+	background-position:center center;
+}
+.esc_gal
+{
+	text-align:center;
+	font-family: arial;
+	font-size:16px;
+	line-height:2;
+	color:#d4cca3;
+	font-style:italic;
+}
+.top_right_arrow,.top_left_arrow
+{
+	margin-top:235px;
+}
+.top_left_arrow
+{
+    left:0;
+}
+.top_right_arrow
+{
+        right:0;
+}
+.top_right_arrow .gal_arrow
+{
+
+    background:transparent url('../img/fsize2/right-arrow.png') no-repeat center 0;
+}
+.top_left_arrow:hover .gal_arrow,.top_right_arrow:hover .gal_arrow
+{
+    background-position:center bottom;
+    cursor:pointer;
+}
+.count_center
+{
+    font-family:arial;
+    font-size:16px;
+    line-height:2;
+    color:#d4cca3;
+    text-align:center;
+}
+.count-style-center
+{
+    width:inherit;
+    top:0;
+}
+.ic_fsize
+{
+    background:url('../img/fsize2/4size.png') no-repeat center;
+   	width:70px;
+    height:29px;
+    margin:33px 0;
+}

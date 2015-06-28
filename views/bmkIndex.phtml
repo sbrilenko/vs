@@ -1,0 +1,139 @@
+<?php
+$page->setTitle('Безлюдовский мясокомбинат');
+?>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Безлюдовский мясокомбинат</h1>
+            <div class="full-cont">
+			<div class="f-r mk-logo">
+				<div class="r-logo">
+				</div>
+				<div class = "rewards l_h_24">
+				Продукция Безлюдовского мясокомбината отмечена многочисленными дипломами, 
+				медалями и отличиями международных, всеукраинских и региональных
+				бизнес-форумов, ярмарок, выставок, в том числе:
+				<!--div class="rw-pict">
+				</div--><div class="cub_2007"></div>
+				«Производитель лучших <br/>отечественных товаров 2007 года»
+				<div class="cub"></div>
+				Победитель рейтинга <br/>«Народная отличие доверия» 
+				</div>			
+			</div>
+            
+			<div class="mk-content">
+				<div class="preview">
+					<p class="pw">Безлюдовский мясокомбинат — современное предприятие в Харьковской
+					области, которое специализируется на производстве высококачественных колбасных 
+					изделий и мясных деликатесов.
+					</p>				
+				</div>
+				<div class="mk-desc">
+					<h3 class="h3">История БМК</h3>
+						<p>Безлюдовский мясокомбинат начал свою производственную деятельность в январе 
+						2006 года. Несмотря на такой короткий срок работы продукция выпускаемая предприятием
+						под ТМ «БМК» пользуется большим спросом у украинских покупателей. Главный принцип, 
+						по которому работает мясокомбинат: высшее качество — незабываемый вкус — широкий ассортимент.
+						</p>
+					<h3 class="h3">Производство</h3>
+						<p>Безлюдовский мясокомбинат оснащен современным высокопроизводительным оборудованием, что позволяет выпускать продукцию высокого 
+							и стабильного качества.
+							Немаловажную роль в успехе компании играет персонал комбината. Специалисты постоянно повышают квалификацию,
+							обучаясь на курсах и тренингах в Австрии, Бельгии и Германии. Эксклюзивные современные специи и инновационный 
+							подход вместе с традиционным подходом к технологии изготовления колбас в соответствии с ГОСТом дают уникальное конкурентное
+							преимущество продукции Безлюдовского мясокомбината. На сегодняшний день ТМ «БМК» заняла широкую нишу на
+							украинском рынке продуктов питания и охватила значительный сегмент рынка, удовлетворяющий потребности
+							населения с различным уровнем дохода. 
+						</p>
+						
+						<div class="y-text">
+							<p class="it-mk">Благодаря наличию собственной лаборатории, сырье, готовая продукция, а также все этапы изготовления 
+							проходят жесткий контроль, тем самым соблюдая жесткие требования международных стандартов к выпускаемой продукции.
+							</p>
+							<p class="it-mk last">Безлюдовский мясокомбинат стал первым в Украине, где была введена система Hazard Analysis and Critical Control Points (HACCP). В соответствии с данной системой, продукция проверяется на всех ключевых этапах производства и соответствует жестким международным стандартам. 
+								</p>
+						</div>
+						
+						
+					<h3 class="h3">Ассортимент продукции</h3>
+						<p>В настоящее время Безлюдовский мясокомбинат выпускает более 200 наименований колбасных изделий под 
+							ТМ «БМК»: сосиски, сардельки, вареные колбасы, полукопченые колбасы, варено-копченые колбасы, сырокопченые 
+							и сыровяленные колбасы, копчености и деликатесы. Специалисты предприятия непрерывно изучают спрос и предпочтения
+							потребителей, внедряя в производство современный зарубежный опыт, суперсовременные технологии изготовления продукции, 
+							 а также расширяя ассортимент выпускаемых изделий. ЗАО «Комплекс Безлюдовский мясокомбинат» много лет сотрудничает
+							с дистрибьюторским предприятием «Высший сорт». Партнерские отношения привели к развитию предприятий и расширению
+							охвата территорий реализации продукции.
+						</p>			
+				
+				<div>			
+			</div>           
+        </div>
+        </div>
+        </div>
+		<div class="clear_both"></div>
+        <?php
+        $sql="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 AND idmanufacturers='000000001' LIMIT 4";
+                $db->query($sql);
+                if($db->getCount()>0)
+                {
+                    echo '<div class="delim-sh"></div>';
+					 echo "	<p class='pw' style='margin:0; font-size:24px;'>Ассортимент</p>"; 
+                    $arrpro=$db->getArray();
+                    echo "<ul class='ass-all'>";
+                    foreach($arrpro as $arrproindex=>$arrproval)
+                    {
+                        if(($arrproindex+1)%4==0)
+                        {
+                            echo "<li class='no-margin-r'>";
+                        }
+                        else  echo "<li>";
+                        
+                        //echo  $prd->kkzphoto($arrproval['photo'],$arrproval['id']);
+                        if(!empty($arrproval['photo']))
+                        {
+                            $photo=str_replace('.','',$arrproval['photo']);
+                            $photo=str_replace('-','_',$photo);
+                            if(file_exists($root."/img/products/fsize1/".$photo."_ass.jpg"))
+                            {
+                                //echo "<img src='../img/products/fsize1/".$photo."_ass.png' />";
+                                echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/".$photo."_ass.jpg' /></a></div>";
+                                echo "<div class='clear_both'></div>"; 
+                            }
+                            else
+                            {
+                                 echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                                 echo "<div class='clear_both'></div>";
+                            }
+                        }
+                        else
+                        {
+                             echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                             echo "<div class='clear_both'></div>";
+                        }     
+                        echo "<a class='name' href='/product/more/id/".$arrproval['id']."'>".$arrproval['name']."</a>";
+                        echo "<div class='after-name'></div>";
+                        echo $prd->getmanufname($arrproval['idmanufacturers']);
+                        $base_ed=$prd->getpricefor($arrproval['id_base_ed_iz']);
+                        if(!empty($base_ed))
+                        {
+                                echo "<br />";
+                                echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($arrproval['id']).' грн</div>';
+                        }
+                        if(!empty($arrproval['weight']))
+                        {
+                             echo "<div class='other f-l'>Вес : ".$arrproval['weight']."</div>";
+                        }
+                       
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                    echo '<div class=" button_all_god  " ><a class="all_product " style="padding-left:31px;" href="/assortment/full/cat/000000003/firm/000000001">Показать&nbsp;еще</a>';
+                }
+        ?>
+		<div class="clear_both"></div>
+	
+	</div>
+<div class="clear_both"></div>
+</div>
+</div>
+</div>

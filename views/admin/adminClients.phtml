@@ -1,0 +1,131 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'clients';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad();
+    require_once 'class.login.clients.php';
+    $cl = new cl();
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Клиенты</div>
+		<?php
+       
+        $page->setTitle('Клиенты | Высший сорт');
+        //print $cl->gencode();
+        echo '<fieldset>';
+        echo "<table style='width:100%;'>";
+        echo "<tr>";
+        echo "<td style='text-align:center;'><span style='position:relative;top:2px;right:7px;'>Сортировка </span>";
+                    echo '<select id="sort" name="sort" style="width:120px;" onchange="getSort()">
+                            <option value="name">По имени</option><option value="phone">По телефону</option><option value="card">По карте</option>
+                            </select>';
+                    echo "</td>";
+        echo "<td>";
+        
+            echo "<table>";
+            echo "<tr>";
+                    echo "<td style='border:none;padding: 4px 0 0 0;'>";
+                    echo "<input type='text' name='searchinput' style='width:200px;'/>";
+                    echo "</td>";
+                    echo "<td style='border:none;text-align:center;'><span style='position:relative;top:2px;'>найти по </span>";
+                    echo '<select id="selsearch" name="selsearch" style="margin-left:7px;width:120px;" onchange="getMask()">
+                          <option value="name">По имени</option><option value="phone">По телефону</option><option value="card">По карте</option>
+                          </select>';
+                    echo "</td>";
+                    echo "<td style='border:none;padding: 4px 0 0 0;'>";
+                    echo "<input type='button' name='clientsearch' value='Поиск'>"; 
+                    echo "</td>";
+                    echo "</tr>";
+                    echo "</table>";
+        echo "</td>";
+        echo "</tr>";
+        echo "</table>";
+           
+        echo '<a href="/admin/clientsEditor/add">+ ДОБАВИТЬ КЛИЕНТА</a>';
+        $db -> query("SELECT * FROM clients WHERE archive=0 ORDER BY name DESC LIMIT 9999");
+        if ($db -> getCount()>0) 
+        {
+            $products = $db -> getArray();
+            echo '<table style="width:100%;" id="clientstable">';
+            foreach($products as $i => $product)
+            {
+                $firm = $DLL -> getFirm($product['idFirm']);
+                $group = $DLL -> getGroup($product['idGroup']);
+                $subgroup = $DLL -> getSubgroup($product['idSubgroup']);
+                $userCreate = $DLL -> getUser($product['idUserCreate']);
+                if ($product['idUserUpdate']) $userUpdate = $DLL -> getUser($product['idUserUpdate']);
+                 
+                echo '<tr style="text-align:left;">';
+                echo '<td style="width: 69px;vertical-align:middle;">';
+                echo '&emsp;<a href="/admin/clientsEditor/edit/'.$product['id'].'"><img src="/img/admin/e.png" title="Редактировать"/></a>';
+                echo '&emsp;<a class="deleteclient" href="/admin/clientsEditor/delete/'.$product['id'].'"><img src="/img/admin/d.png" title="Удалить"/></a>';
+                echo '</td>';
+                echo '<td>';
+                echo '</div>';
+                echo '<div style="float:left;">';
+                if(!empty($product['name']))
+                {
+                    echo '<span class="nf">ФИО:</span> '.$product['name']."<br />";
+                }
+                if(!empty($product['org']))
+                {
+                    echo '<span class="nf">Название организации:</span> '.$product['org']."<br />";
+                }
+                if(!empty($product['namberCard']))
+                {
+                    echo '<span class="nf">Номер карты:</span> '.$product['namberCard']."<br />";
+                }
+                if(!empty($product['discount']))
+                {
+                    echo '<span class="nf">Скидка:</span> '.$product['discount']." %<br />";
+                }
+                if(!empty($product['zakaz']))
+                {
+                    echo '<span class="nf">Общая сумма заказа:</span> '.$product['zakaz']." <br />";
+                }
+                if(!empty($product['email']))
+                {
+                    echo '<span class="nf">Email:</span> '.$product['email']." <br />";
+                }
+                echo '<span class="nf">Телефон:</span> '.$product['phone'];
+                echo '</td>';
+                echo '<td  style="line-height: 10px;text-align: right;font-weight: normal;font-size: 9px;font-style: italic;color: #97978D;">';
+                echo '<span class="nf">Товар создан:</span> ('.$dtClass -> dtFromDB($product['dtCreate']).')';
+                echo '<br /><span class="nf">Пользователем:</span> '.$userCreate;
+                if ($userUpdate) 
+                {
+                    echo '<br /><span class="nf">Товар редактирован:</span> ('.$dtClass -> dtFromDB($product['dtUpdate']).')';
+                    echo '<br /><span class="nf">Пользователем:</span> '.$userUpdate;
+                }
+                echo '</td>';
+                echo'</tr>';
+                 
+                
+            }
+            echo '</table>';
+            if ($i==9998) echo 'Это не все товары.<br /> Ограничено на показ 9999 шт.';
+        }
+        else
+        {
+             if ($_SESSION['FilterFirm']) $firm = $DLL -> getFirm($_SESSION['FilterFirm']);
+             if ($_SESSION['FilterGroup']) $group = $DLL -> getGroup($_SESSION['FilterGroup']);
+             if ($_SESSION['FilterSubgroup']) $subgroup = $DLL -> getSubgroup($_SESSION['FilterSubgroup']);
+             $name = $_SESSION['FilterName'];
+             echo '<br /><br />Ничего не найдено!<br />';
+             if ($firm) $userQuery .= $firm.' &rArr; ';
+             if ($group) $userQuery .= $group.' &rArr; ';
+             if ($subgroup) $userQuery .= $subgroup.' &rArr; ';
+             if ($name) $userQuery .= $name.' &rArr; ';
+             $userQuery = ($userQuery) ? 'По запросу '.(substr($userQuery,0,(strlen($userQuery) - 8))) : null;
+             echo $userQuery;
+        }
+        
+        echo '</fieldset>';
+        ?>
+    </td>
+  </tr>

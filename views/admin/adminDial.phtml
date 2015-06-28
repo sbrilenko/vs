@@ -1,0 +1,19 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'dial';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad(); 
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Наборы</div>
+        <?php $page -> setTitle("Наборы | высший сорт"); ?>
+        <span id="fieldProduct">
+            <?php require_once 'ajax/dial/dialView.php';?>
+        </span>
+    </td>
+  </tr>

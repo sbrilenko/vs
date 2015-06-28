@@ -1,0 +1,1 @@
+$(function(){$("input[name=namberCard],input[name=nc]").mask("99 99 99");})

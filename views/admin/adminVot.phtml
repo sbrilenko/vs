@@ -1,0 +1,74 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'menu';
+    include "menu.php"; 
+?>
+</td>
+</tr>
+<tr>
+    <td >
+        
+		<?php  
+        
+        $page->addScript('js/jquery.form.js');
+        $db = db :: getInstance();
+       print 'page admin/vot';
+       $newClass = new ad(); // Создаем экземпляр класса Sample
+        echo $newClass->formb('form','form','post','multipart/form-data','','/views/admin/ajax/index/save_all.php','console.log(jqForm);',"
+        
+        if (responseText.indexOf('red') == -1) {
+          	     location.href='/admin';
+                 
+            }
+            else
+            {
+                $('form#editForm input[type=file]').attr('disabled',false);
+            	alert(responseText.replace(/<.*?>/g, ''));
+            }");
+        echo "<table style='width:100%;'>";
+        
+        echo "<tr><td>";
+        echo $newClass->titleandhelp($text_desc,$text_help,'text-align:left');
+        echo "</td><td>";
+        echo $newClass->input_('text','ssds','sds','','','width:350px;float:left;',0);
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo $newClass->titleandhelp($text_desc,$text_help,'text-align:left');
+        echo "</td><td>";
+        echo $newClass->input_('checkbox','s','s','fdfddf','','width:50px;float:left;',0);
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo $newClass->titleandhelp($text_desc,$text_help,'text-align:left');
+        echo "</td><td>"; 
+        echo $newClass->select('sds','sdsd','dsdds','width:500px;float:left;',array("foo", "bar", "hallo", "world"));
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo $newClass->titleandhelp($text_desc,$text_help,'text-align:left');
+        echo "</td><td>";
+        $description = $newClass->replaceToDraw('');
+        $newClass->drawEditor('description', $description,1,1,0);
+        echo "</td></tr>";
+        echo "</td><td style='width:220px;'>";
+        echo $newClass->titleandhelp($text_baner,$text_b_desc,'text-align:left');
+        echo "</td><td class='text_align_left'>";
+        echo $newClass->input_('file','image','image','','','','image/jpg',0);
+        echo $newClass->input_('button','load_image','load_image','',$text_load_i,'','');
+        echo "<span id='img_loader_photo'></span></td></tr>";
+        echo "</td><td style='width:220px;'>";
+        echo $newClass->titleandhelp($text_photootcet,$text_p_desc,'text-align:left');
+        echo "</td><td class='text_align_left'>";
+        echo $newClass->input_('file','image','image','','','','image/jpg',1);
+        echo $newClass->input_('button','load_image','load_image','',$text_load_i,'','');
+        echo "<span id='img_loader_photo'></span></td></tr>";
+        echo "<tr><td></td><td>";
+        echo $newClass->input_('submit','s','s','fdfddf',$text_per_b,'width:150px;',0);
+        echo "</td></tr>";
+        echo "</table>";
+        echo $newClass->forme();
+        
+        ?>
+        
+
+    </td>
+  </tr>

@@ -1,0 +1,379 @@
+
+
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+<?php
+$root = $_SERVER['DOCUMENT_ROOT'];
+$page->addScript('js/user.js','js/jquery.form.js','js/gal.js');
+if($controller-> hasParam('id') AND $controller-> getParam('id')!='')
+{
+        $id=$controller-> getParam('id');
+}
+$from_url='';
+if($controller-> hasParam('from') AND $controller-> getParam('from')!='')
+{
+        $from=$controller-> getParam('from');
+        switch($from)
+        {
+            case 'assortiment':
+                $from_url="/assortment/full";
+            break;
+            case 'kkz':
+                $from_url="/kkz";
+            break;
+            case 'set':
+                $from_url="/set";
+            break;
+        }
+}
+if(empty($id) AND empty($_SERVER['HTTP_REFERER']))
+{
+    header('Location: /assortment/full');
+}
+if(empty($id))
+{
+    header('Location:'.$_SERVER['HTTP_REFERER']);
+}
+    
+    $sql_get="SELECT * FROM goods WHERE deleted=0 AND id='".$id."'";
+    
+    $db->query($sql_get);
+    if($db->getCount()>0)
+    {
+        $arr_p=$db->getArray();
+        echo "<div class='f-l'><h1>".$arr_p[0]['name']."</h1></div>";
+        if(!empty($from_url))
+        {
+            echo "<div class='f-r'><a class='go-back' href='".$from_url."'>Назад</a></div>";
+        }
+        echo "<div class='clear_both'></div>";
+        if($from=='kkz')
+        {
+             echo "<div class='block-product'>";
+             include $root."/lib/block-status-user.php";
+             echo "</div>";
+             echo "<div class='clear_both'></div>";
+        }
+        echo '<!--<div class="bredcromb">Товары с доставкой / Корпоративно-коллективный заказ</div>-->
+            <div class="block-product this-is-more">';
+        if(!empty($arr_p[0]['photo']))
+                        {
+                            $arr_p[0]['photo']=str_replace('.','',$arr_p[0]['photo']);
+                            $arr_p[0]['photo']=str_replace('-','_',$arr_p[0]['photo']);
+                            if(file_exists($root."/img/products/fsize1/".$arr_p[0]['photo'].".png"))
+                            {
+                                if(file_exists($root."/img/gal/fsize1/".$arr_p[0]['gallery_photo']) AND $arr_p[0]['is_gallery_photo'] == 1)
+                                {
+                                    $style = 'class = "gal" style="cursor:pointer;" data-ajax="true" data-current="0" data-folder="../img/gal/" data-db="'.$arr_p[0]['id'].'"';
+                                }
+                                else
+                                {
+                                    $style = '';
+                                }
+                                echo "<div class='f-l product-left-img'><img src='../img/products/fsize1/".$arr_p[0]['photo'].".png' ".$style."/></div>";
+                            }
+                            else
+                            {
+                                 echo "<div class='f-l product-left-img'><img src='../img/products/fsize1/good-empty.png' /></div>";
+                            }
+                           
+                        }
+                        else
+                        {
+                             echo "<div class='f-l product-left-img'><img src='../img/products/fsize1/good-empty.png' /></div>";
+                        }
+        echo '<div class="f-r product-right-block-desc">';
+        $select="SELECT name,photo FROM manufacturers WHERE deleted=0 AND id='".$arr_p[0]['idmanufacturers']."'";
+        $db->query($select);
+        if($db->getCount()>0)
+        {
+            $f=$db->getArray();
+            if(!empty($f[0]['photo']))
+            {
+                $f[0]['photo']=str_replace('.','',$f[0]['photo']);
+                $f[0]['photo']=str_replace('-','_',$f[0]['photo']);
+                if(file_exists($root."/img/firm/fsize1/".$f[0]['photo']."_ass.png"))
+                {
+                    if(!empty($f[0]['link']))
+                    {
+                        echo "<div class='f-l'><a href='/".$f[0]['link']."'><img src='../img/firm/fsize1/".$f[0]['photo']."_ass.png' /></a></div>";
+                    }
+                    else
+                    {
+                        echo "<div class='f-l'><img src='../img/firm/fsize1/".$f[0]['photo']."_ass.png' /></div>";
+                    }
+                }
+                else
+                {
+                     echo "<div class='f-l'><img src='../img/firm/fsize1/firm-empty.png' /></div>";
+                }
+            }
+            else
+            {
+                 echo "<div class='f-l'><img src='../img/firm/fsize1/firm-empty.png' /></div>";
+            }
+            echo '<div class="f-l back-pos-none-on-hover"></div><div class="proizv-text f-l"><a href="#">'.$f[0]['name'].'</a><br />';
+        }
+        $select="SELECT * FROM categorygoods WHERE deleted=0 AND id='".$arr_p[0]['idcategory']."'";
+        $db->query($select);
+        if($db->getCount()>0)
+        {
+            $f=$db->getArray();
+            echo '<a href="/assortment/full/cat/'.$f[0]['id'].'">'.$f[0]['name'].'</a> ';
+        }     
+        $select="SELECT * FROM typegoods WHERE deleted=0 AND id='".$arr_p[0]['idtypegoods']."'";
+        $db->query($select);
+        if($db->getCount()>0)
+        {
+            $f=$db->getArray();
+            echo '<a href="/assortment/full/pr/'.$f[0]['id'].'">'.$f[0]['name'].'</a> ';
+        }  
+        $select="SELECT * FROM viewgoods WHERE deleted=0 AND id='".$arr_p[0]['idviewgoods']."'";
+        $db->query($select);
+        if($db->getCount()>0)
+        {
+            $f=$db->getArray();
+            echo '<a href="/assortment/full/vpr/'.$f[0]['id'].'">'.$f[0]['name'].'</a>';
+        }
+        echo '</div>';      
+        echo '<div class="clear_both"></div>
+                    
+                    <div class="text text-margin-top">';
+        if(!empty($arr_p[0]['description']))
+        {
+            echo '<div class="bold">Описание:</div>'.$arr_p[0]['description'];
+        }
+        if(!empty($arr_p[0]['composition']) AND !empty($arr_p[0]['description']))
+        {
+            echo "<br /><br />";
+        }
+        if(!empty($arr_p[0]['composition']))
+        {
+            echo '<div class="bold">Состав:</div>'.$arr_p[0]['composition'];
+        }
+        $countblocks=0;
+        echo '</div>
+                    <div class="text-other text-margin-top">
+                    <ul class="list-product-column">';
+                    if(!empty($arr_p[0]['storage_life']))
+                    {
+                        $countblocks++;
+                       echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Срок хранения:</div>
+                            '.$arr_p[0]['storage_life'].'
+                            <br />
+                             <br />
+                            </li>';
+                    }
+                    
+                    if(!empty($arr_p[0]['storage_conditions']))
+                    {
+                        $countblocks++;
+                        echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Условия хранения:</div>
+                            '.$arr_p[0]['storage_conditions'].'
+                            <br />
+                              <br /></li>';
+                         if($countblocks%3==0 AND $countblocks>0)
+                        {
+                            echo '<li class="clear"></li>'; 
+                        }
+                    } 
+                    
+                    if(!empty($arr_p[0]['shell']))
+                    {
+                        $countblocks++;
+                        echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Оболочка:</div>
+                            '.$arr_p[0]['shell'].'
+                            <br />
+                            <br /></li>';
+                        if($countblocks%3==0 AND $countblocks>0)
+                        {
+                            echo '<li class="clear"></li>'; 
+                        }
+                    }
+                    
+                    if(!empty($arr_p[0]['packing']))
+                    {
+                        $countblocks++;
+                        echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Упаковка:</div>
+                            '.$arr_p[0]['packing'].'
+                            <br />
+                            <br /></li>';
+                        if($countblocks%3==0 AND $countblocks>0)
+                        {
+                            echo '<li class="clear"></li>'; 
+                        }
+                    }
+                   
+                    if(!empty($arr_p[0]['weight']) AND $arr_p[0]['weight']>0)
+                    {
+                        $countblocks++;
+                        echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Средний вес:</div>
+                            '.$arr_p[0]['weight'].'
+                            <br />
+                            <br /></li>';
+                            if($countblocks%3==0 AND $countblocks>0)
+                            {
+                                echo '<li class="clear"></li>'; 
+                            }
+                    }
+                    if($arr_p[0]['gmo']==1)
+                    {
+                        $countblocks++;
+                        echo ($countblocks%3!=1)?'<li class="left">':'<li>';
+                        echo '<div class="text-other-bold">Без ГМО</div>
+                            <br />
+                            <br /></li>';
+                        if($countblocks%3==0 AND $countblocks>0)
+                        {
+                            echo '<li class="clear"></li>'; 
+                        }
+                    }    
+         echo '</ul>
+                        
+                    </div>
+                    <div class="clear_both"></div>
+                    <br />
+                    <br />
+                    <br />
+                    ';
+                    if(!empty($from_url) AND $from=="kkz")
+                    {
+                            $falg=0;
+                            foreach($_SESSION['arrayorder'][$_SESSION['active']] as $ind=>$vol)
+                            {
+                                if($_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']==$arr_p[0]['id'])
+                                {
+                                    echo '<div class="product-price-text f-l">Цена заказа: <span class="product-price-p kkz-price">'.$prd->getuserpriceformat($_SESSION['arrayorder'][$_SESSION['active']][$ind]['id'],$arr_p[0]['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k']).' грн</span></div>';
+                                    echo '<div class="f-l buy-margin-left"><form method="post">';
+                                    echo '<input type="hidden" name="id" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id'].'"/>';
+                                    echo '<input type="button" class="kkz-plus-minus plus disabled" disabled="disabled" value="+" /><input type="text" readonly  class="val kkz-kol-input" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k'].'"/><input type="button" class="kkz-plus-minus minus disabled" disabled="disabled" value="-" /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arr_p[0]['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']).'</span>';
+                                    echo '<a href="/cart" class="in-basket">В корзине</a></form></div>';
+                                    $falg=1;
+                                    break;
+                                }
+                            }
+                            if($falg==0)
+                            {
+                                echo '<div class="product-price-text f-l">Цена заказа: <span class="product-price-p kkz-price">'.$prd->getuserpriceformat($arr_p[0]['id'],$arr_p[0]['user_ed_iz'],1).' грн</span></div>';
+                                echo '<div class="f-l buy-margin-left"><form method="post">';
+                                echo '<input type="hidden" name="id" value="'.$arr_p[0]['id'].'"/>';
+                                echo '<input type="button" class="kkz-plus-minus plus" value="+" /><input type="text" readonly  class="val kkz-kol-input" value="1"/><input type="button" class="kkz-plus-minus minus" value="-" /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arr_p[0]['user_ed_iz'],$arr_p[0]['id']).'</span>';
+                                echo '<span class="buy kkz-buy">Купить</span></form></div>';
+                                    
+                            }
+                            
+                            /*$sql_price_for="SELECT * FROM unitsofgoods WHERE deleted=0 AND id='".$arr_p[0]['user_ed_iz']."' AND idgoods='".$arr_p[0]['id']."'";
+                            $db->query($sql_price_for);
+                            if($db->getCount()>0)
+                            {
+                                $arr_ed=$db->getArray();
+                                $factor=$arr_ed[0]['factor'];
+                                $sql_price="SELECT * FROM priceofgoods WHERE deleted=0 AND idgoods='".$arr_p[0]['id']."'";
+                                $db->query($sql_price);
+                                if($db->getCount()>0)
+                                {
+                                    $arr_p=$db->getArray();
+                                    
+                                    $price=$arr_p[0]['price'];
+                                    echo '<div class="clear_both"></div>';
+                                     echo '<div class="product-price-text f-l">Цена заказа: <span class="product-price-p kkz-price">'.number_format(1*$factor*$price, 2, '.', '').' грн</span></div>
+                                    <div class="f-l buy-margin-left">';
+                                    echo '<div class="f-l"><form method="post">';
+                                    echo '<input type="hidden" name="id" value="'.$arrproval['id'].'"/>';
+                                    echo '<input type="button" class="kkz-plus-minus plus" value="+" /><input type="text" readonly  class="val kkz-kol-input" value="1"/><input type="button" class="kkz-plus-minus minus" value="-" /><span class="kkz-kol-input" style="padding:0;">'.$arr_ed[0]['name'].'</span>';
+                                    echo '<span class="buy kkz-buy">Купить</span></form></div>';
+                                    
+                                }
+                            }*/
+                    }
+                    
+                echo '</div>';
+    }
+    else
+    {
+        header('Location:'.$_SERVER['HTTP_REFERER']);
+    }
+   
+?>
+                
+            </div>
+              <div class="clear_both"></div>
+            <div class="delim-sh"></div>
+             <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li>
+                    <div class="uderfooter-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Сеть реализации</a>
+                        <br /><br />
+                        Приглашаем Вас посетить фирменные магазины, что бы вы могли насладиться процессом выбора и найти. Приглашаем Вас посетить фирменные магазины.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li2-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Дисконтная система</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter-li4-img"></div>
+                    <div class="underfooter-title">
+                        <a href="">Специальные наборы</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+             </ul>
+             </div>
+        </div>
+        </div>
+        
+        
+        
+        
+
+
+
+</div>
+
+        <!--GALLERY-->
+<div class="gallery display_none">
+    <div class="p-f galery_back z_index_10000"></div>
+    <div class="p-f gall_position photo_gallery">	
+                   <div class="p-a right-zero bottom-zero">
+                        <div class="ic_fsize p-r"></div>
+                   </div>
+    		      <div class="f-r">
+                        <div class="p-a ">
+                            <div class="close_photos_gal p-r" title="Закрыть (Esc)" style="width: 15px;height: 15px;background: #a00;z-index:2000;"></div>
+                        </div>
+                   </div>
+    		      	
+    		     	    <div class="p-r overflow-hidden photo_gallery">
+    		     	    	 <div class='p-a preloader' id='preloader_gif'></div>
+		    		    		<div id="for-map" class="text-align-c">
+		    		    	
+    		    		</div>
+    		    	</div>
+    		     
+    		     
+   </div>
+</div>

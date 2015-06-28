@@ -1,0 +1,217 @@
+<?php 
+	$page = Page :: getInstance(Page :: $HTML5);
+    $page -> addScript('js/jquery-1.8.2.js','js/mask.js','js/lazy.js','js/index.js',
+//        'http://cssuseragent.org/cssua.min.js',
+        'js/cookie_plag.js');
+	$page-> setKeywords("");
+	$page->setDescription("");
+    $page->addCss('css/reset.css');
+    $page->addFsize('css/s1000.css','fsize');
+    $page->addCssMediaWidth('css/s1000.css',null,'1200');
+    $page->addCssMediaWidth('css/s1200.css','1201','1582');
+    $page->addCssMediaWidth('css/s1600.css','1583',null);
+    $page->setFavicon('../img/favicon.ico');
+?>
+<link rel='stylesheet' href='css/sgal1.css' id='galsize' type='text/css' media='screen' />
+<script type="text/javascript">
+
+
+//$(function() {
+
+//    if (cssua.userAgent.mobile)
+//    {
+//       if(navigator.userAgent.match(/iPad/i) == null)
+//       {
+//        if($.cookie('first')!=1)
+//        {
+//            if(($.cookie('mobile')==1 || $.cookie('mobile')==null) && ($.cookie('first')==0 || $.cookie('first')==null)) { document.location="/"; $.cookie('first', 1 , { expires: 365});}
+//        }
+//        else
+//        {
+//            if($.cookie('mobile')==1 )
+//            {
+//                document.location="/";
+//            }
+//            else
+//            if($.cookie('mobile')==0)
+//            {
+//
+//            }
+//            else
+//            {
+//                $('.proverka_mob').show();
+//            }
+//
+//        }
+//         }
+//       // else
+//       // {
+//            console.log('mobile ',$.cookie('mobile'))
+//            console.log('first ',$.cookie('first'))
+//            console.log('mobile ',cssua.userAgent.mobile)
+//       // }
+//
+//    }
+//    else
+//    {
+//        if($.cookie('first')==1)
+//        {
+//            console.log('no mobile ',$.cookie('mobile'))
+//            console.log('no mobile first ',$.cookie('first'))
+//            console.log('no mobile ',cssua.userAgent.mobile)
+//            if($.cookie('mobile')==null)
+//            {
+//                $('.proverka_mob').show();
+//
+//            }
+//            else
+//            if($.cookie('mobile')==0)
+//            {
+//                return false;
+//            }
+//            else
+//            if($.cookie('mobile')==1)
+//            {
+//                document.location="/";
+//            }
+//        }
+//
+//    }
+//          var istouch=(!!('ontouchstart' in window))?'touchstart':'click';
+//          $('.mob_no').on(istouch,function()
+//          {
+//              $('.proverka_mob').hide();
+//              $.cookie('mobile', 0 , { expires: 365});
+//          })
+//        $('.mob_yes').on(istouch,function()
+//        {
+//            $('.proverka_mob').hide();
+//            $.cookie('mobile', 1 , { expires: 365});
+//            document.location="/";
+//
+//        })
+//          $("img").lazyload();
+//          $('.menu-back>a').on('click',function(){return false;})
+//      });
+</script>
+
+
+<div class="proverka_mob">
+    <div class="center_block">
+        <p>Вы перешли в  полную версию. Хотите, что бы всегда открывалась полная версия?</p>
+        <div class="bt_proverka mob_no">Да</div>
+        <div class="bt_proverka mob_yes">Нет</div>
+    </div>
+</div>
+<div class="header-top-back">
+    <div class="margin_auto width4size header_h">
+    <div class="body-margin">
+        <div class="logo background_none ">
+            <a href="/"><div class="logo"></div></a>
+        </div>
+        
+        <div class="f-l">
+            <ul class="menu">
+                <li class="li-company">                
+                <div class="menu-back">	                  
+                    <a href="#">
+                        <div class="company-menu"></div>
+                        <div class="menu-name"><span class="menu-text">Компания</span></div>
+                        <div class="undermenuhover"></div>
+                    </a>
+                </div>
+                <ul class="li-sub">
+                            <li><a href="/about">О компании</a></li>
+                            <li><a href="/customers">Клиентам</a></li>
+                            <li><a href="/partners">Партнерам</a></li>
+                            <li><a href="/career">Карьера</a></li>  
+                            <li><a href="/contacts">Контактная информация</a></li>                 
+                    </ul>
+                </li>
+				
+                <li class="li-assort">
+				<div class="menu-back">
+                <a href="#">
+                   <div class="assortiment-menu"></div>
+                    <div class="menu-name"><span class="menu-text">Ассортимент</span></div>
+                    <div class="undermenuhover"></div>
+                </a>
+				</div>
+                    <ul class="li-sub">
+                        <?php
+                        $sql="SELECT c.id,c.name FROM categorygoods as c,goods as p WHERE p.idcategory=c.id AND p.setofgoogs=0 GROUP BY c.id ORDER BY c.name";
+                        $db->query($sql);
+                        $first="";
+                        $else="";
+                        if($db->getCount()>0)
+                        {
+                            $arrcat=$db->getArray();
+                            foreach($arrcat as $arrcatindex=>$arrcatval)
+                            {
+                                $select="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 AND idcategory=".$arrcatval['id'].$sql_cat;
+                                $db->query($select);
+                                if($db->getCount()>0)
+                                {
+                                    echo "<li><a href='assortment/full/cat/".$arrcatval['id']."'>".$arrcatval['name']."</a></li>";
+                                }
+                               
+                            }
+                        }
+                        
+                        $sql="SELECT * FROM manufacturers WHERE deleted=0 AND link<>'' ORDER BY name";
+                        $db->query($sql);
+                        if($db->getCount()>0)
+                        {
+                            $fi=$db->getArray();
+                            foreach($fi as $fiindex=>$fival)
+                            {
+                                echo "<li>";
+                                echo "<a href='".$fival['link']."'>".$fival['name']."</a>";
+                                echo "</li>";
+                            }
+                        }
+                        ?>
+                        <!--<li><a href="#">Безлюдовский мясокомбинат (БМК)</a></li>
+						<li><a href="#">Марьинский мясокомбинат (ММК)</a></li>-->
+					</ul>
+                    
+                </li>
+    <?
+        $count=0;
+//        $sql = "SELECT number FROM counter WHERE name = 'order_today'";
+//        $db->query($sql);
+//        if($db->getCount()>0){
+//            $count = $db->getValue();
+//        }
+    ?>
+                
+                
+                <li class="li-deliver">
+                <div class="menu-back">
+				<a href="#">
+					
+                   <div class="delivery-menu"></div>
+					<div class="p-a delivery-count">Сегодня заказов <span class="counter"><?echo $count;?></span></div>
+                    <div class="menu-name" ><span class="menu-text">Товары&nbsp;с&nbsp;доставкой</span></div>
+                    <div class="undermenuhover"></div>					
+                </a>
+				</div>
+                     <ul class="li-sub">
+                        <!--li><a href="/set">Готовые наборы</a></li-->
+                        <li><a href="/kkz">Корпоративно-коллективный заказ</a></li>
+                        <li><a href="/delivery">Доставка и оплата</a></li>
+                    </ul>
+                    
+                </li>
+            </ul>
+        </div>
+        <div class="f-r">
+            <div class="phone">(050) 474-33-83<p>(099) 22-64-778</p></div>
+            <div><a href="/contacts" class="contacts">Контактная информация</a></div>
+        </div>
+    </div>
+    
+    </div>
+    <div class="clear_both"></div>
+    <div class="after-header-ot"></div>
+    <div class="clear_both"></div>

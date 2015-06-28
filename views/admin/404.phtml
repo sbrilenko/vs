@@ -1,0 +1,50 @@
+<?php 
+    
+	$page -> addScript("js/index.js");
+	switch($var_zav)
+	{
+		case 'shato':
+			$place_id=1;
+			$place_name='Кафе «Шато»';
+			$adress='тел.&nbsp;(062)&nbsp;304-05-06,&nbsp;<a class="contacts" href="/contacts">пр.&nbsp;Комсомольский,&nbsp;27</a>';
+
+		break;
+		case 'corsar':
+			$place_id=2;
+			$place_name='Таверна «Корсар»';
+			$adress='тел.&nbsp;(062)&nbsp;304-04-04,&nbsp;<a class="contacts" href="/contacts">пр.&nbsp;Комсомольский,&nbsp;27</a>';
+		break;
+		case 'banana':
+			$place_id=3;
+			$place_name='Ресторанчик "BA-NA-NA"';
+			$adress='тел.&nbsp;(062)&nbsp;312-58-58,&nbsp;(066)&nbsp;341-58-58,<a class="contacts" href="/contacts">ул.&nbsp;Артема,&nbsp;80а</a>';
+		break;
+		case 'gh':
+			$place_id=4;
+			$place_name='Ресторан «Гуляй-хата»';
+			$adress='тел.&nbsp;(062)&nbsp;300-21-21,&nbsp;(066)&nbsp;340-21-21,<a class="contacts" href="/contacts">ул.&nbsp;Нижнедворцовая,&nbsp;1а</a>';
+		break;
+		case 'pz':
+			$place_id=1;
+			$adress='';
+		break;
+	}
+	$page -> setTitle($place_name.'- Запрашиваемая страница не найдена!'); 
+?>
+		<div class='margin_0_auto width4size'>
+	 	<div class='err_width_center margin_0_auto'>
+	  	       <div class='clear'></div>
+			  <div class='after_err_height'></div>
+			   <div class='clear'></div>
+			  <div class='err_text'>404<div class='underfined'>ОШИБКА</div></div>
+			  <div class='chair_error'></div>
+			  <div class='clear'></div>
+			  <div class='err_no_page'>Такой страницы не существует. Перейдите на главную.
+			  		<p><a href='http://<?php print $_SERVER[SERVER_NAME];?>' title='Вернуться к заведению'>Вернуться к заведению</a></p>
+			  </div>
+			  
+			  <div class='after_err_height'></div>
+		  </div>
+		  </div>
+	
+	

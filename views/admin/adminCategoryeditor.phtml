@@ -1,0 +1,85 @@
+<?php
+    $db = db :: getInstance(); 
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+    
+    if ($action != 'delete' and $action != 'edit' and $action != 'add') header("Location: /admin/categoty");
+    
+    if ($action == 'delete')
+    {
+        //плучаем id всех товаров которые относились к данной категории продкуции
+        $sql="SELECT * FROM products WHERE category={$id}";
+        $db->query($sql);
+        if($db->getCount()>0)
+        {
+            $sql_all_pr_this_firm=$db->getArray();
+            //пройдемся и удалим их из состава наборов
+            foreach($sql_all_pr_this_firm as $sql_all_pr_this_firm_indexs=>$sql_all_pr_this_firm_val)
+            {
+                $sql_update_sostav="UPDATE sostav SET archive=1 WHERE id_ass=".$sql_all_pr_this_firm_val['id'];
+                $db->query($sql_update_sostav);
+            }
+        }
+        //обновляем товары 
+        $sql="UPDATE products SET archive=1 WHERE category={$id}";
+        $db->query($sql);
+        
+        $db -> query("UPDATE category SET archive=1 WHERE id = {$id}");
+        header("Location: /admin/category");
+        exit();
+    }
+    if ($action == 'edit')
+    {
+        $db -> query("SELECT name FROM category WHERE id = {$id}");
+        $firm = $db -> getValue();
+        if (!$firm) header("Location: /admin/category");
+    }
+?>
+<tr>
+<td class='head'>
+<?php
+    $tut = 'category';
+    include "menu.php"; 
+    $form = new ad();
+?>
+</td>
+</tr>
+<tr>
+    <td>
+    <div class="back"><a href="/admin/category">НАЗАД</a></div>
+        <div class="title"><?=($action == 'add')?'Добавление':'Редактирование';?> категории</div>
+		<?
+        ($action == 'add')?$page->setTitle('Добавление категории | Высший сорт'):$page->setTitle('Редактирование категории | Высший сорт');
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/category.php','',"
+        if (responseText.indexOf('error') == -1) location.href='/admin/category';
+            else
+            {
+                $('form#editForm input[type=file]').attr('disabled',false);
+            	alert(responseText.replace(/<.*?>/g, ''));
+            }");
+        if($action == 'add')
+        {
+            $title = 'Введите новую категорию';
+            $btn = 'add';
+        }
+        else
+        {
+            $title = 'Редактирование категорию';
+            $btn = 'edit';
+        }
+            
+        if ($firm and $id) echo $form->input_('hidden','id','','',$id,'',0,'','','','','','','');
+        echo "<table style='width:100%;'>";
+            echo "<tr><td>";
+            echo $form -> titleandhelp($title,'','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','name','','',$firm,'width:350px;float:left;','',0,'','','','','','','');
+            echo "</td></tr>";
+            echo "<tr><td colspan='2' align='center'><br />";
+            echo $form->input_('submit',$btn,$btn,'','Сохранить','',0,'','','','','','','');
+            echo "</td></tr>";
+        echo "</table>";
+        echo $form->forme();
+        ?>
+    </td>
+  </tr>

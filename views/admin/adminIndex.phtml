@@ -1,0 +1,50 @@
+<tr>
+<td class='head'>
+<?
+    $tut = 'order';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad();
+    echo $form -> input_('hidden','orderPage','orderPage','','1','width:350px;float:left;','',0,'','','','','','','');
+    $view = $controller -> getParam(1);
+    $what = $controller -> getParam(2);
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Заказы</div>
+        <?php
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/order/orders.php','',"
+        if (responseText.indexOf('error') == -1) 
+            $('#fieldOrder').html(responseText);
+        else
+       	    alert(responseText.replace(/<.*?>/g, ''));");
+                
+        echo "<table align='center'>";
+            echo "<tr>";
+                echo "<td>";
+                    echo $form->input_('text','dateFrom','dateFrom','',$_SESSION['dateFromFormat'],'width:100px;','',0,'','','','','','','');
+                echo "</td>";
+                
+                echo "<td>";
+                    echo '&emsp;'.$form->input_('text','dateTo','dateTo','',$_SESSION['dateToFormat'],'width:100px;','',0,'','','','','','','');
+                echo "</td>";
+                
+                echo "<td>";
+                    echo $form->input_('hidden','reset','reset','','','',0,'','','','','','','');
+                    echo '&emsp;&emsp;'.$form->input_('submit','resetBtn','','','сбросить','height:24px;padding:0 4px','',0,'','','','','','','');
+                echo "</td>";
+                
+                echo "<td>";
+                    echo '&nbsp;'.$form->input_('submit','go','','','показать','height:24px;padding:0 4px','',0,'','','','','','','');
+                echo "</td>";
+            echo "</tr>";
+        echo "</table>";
+        echo $form->forme();
+        ?>
+		<span id="fieldOrder">
+            <?require_once 'ajax/order/orders.php';?>
+        </span>
+    </td>
+</tr>

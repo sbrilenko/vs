@@ -1,0 +1,455 @@
+<?php
+$page->addScript('js/ass-show-more.js');
+$cat=0;
+$pr=0;
+$vpr=0;
+$firm=0;
+$link="assortment/full";
+$root = $_SERVER['DOCUMENT_ROOT'];
+if($controller-> hasParam('cat') AND $controller-> getParam('cat')!='')
+{
+        $cat=$controller-> getParam('cat');
+}
+if($controller-> hasParam('pr') AND $controller-> getParam('pr')!='')
+{
+        $pr=$controller-> getParam('pr');
+}
+if($controller-> hasParam('vpr') AND $controller-> getParam('vpr')!='')
+{
+        $vpr=$controller-> getParam('vpr');
+}
+if($controller-> hasParam('firm') AND $controller-> getParam('firm')!='')
+{
+        $firm=$controller-> getParam('firm');
+}
+$catlink=$link;
+$prlink=$link;
+$vprlink=$link;
+$firmlink=$link;
+$sql_cat="";
+$sql_pr="";
+$sql_vpr="";
+$sql_firm="";
+$sql_output="";
+if($cat!=0)
+{
+    $prlink.="/cat/".$cat;
+    $vprlink.="/cat/".$cat;
+    $firmlink.="/cat/".$cat;
+    $sql_pr.=" AND idcategory=".$cat;
+    $sql_vpr.=" AND idcategory=".$cat;
+    $sql_firm.=" AND idcategory=".$cat;
+    $sql_output.=" AND idcategory=".$cat;
+}
+if($pr!=0)
+{
+    $catlink.="/pr/".$pr;
+    $vprlink.="/pr/".$pr;
+    $firmlink.="/pr/".$pr;
+    $sql_cat.=" AND idtypegoods=".$pr;
+    $sql_vpr.=" AND idtypegoods=".$pr;
+    $sql_firm.=" AND idtypegoods=".$pr;
+    $sql_output.=" AND idtypegoods=".$pr;
+}
+if($vpr!=0)
+{
+    $catlink.="/vpr/".$vpr;
+    $prlink.="/vpr/".$vpr;
+    $firmlink.="/vpr/".$vpr;
+    $sql_cat.=" AND idviewgoods=".$vpr;
+    $sql_pr.=" AND idviewgoods=".$vpr;
+    $sql_firm.=" AND idviewgoods=".$vpr;
+    $sql_output.=" AND idviewgoods=".$vpr;
+}
+if($firm!=0)
+{
+    $catlink.="/firm/".$firm;
+    $prlink.="/firm/".$firm;
+    $vprlink.="/firm/".$firm;
+    $sql_cat.=" AND idmanufacturers=".$firm;
+    $sql_pr.=" AND idmanufacturers=".$firm;
+    $sql_vpr.=" AND idmanufacturers=".$firm;
+    $sql_output.=" AND idmanufacturers=".$firm;
+}
+?>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <div class="f-l"><h1>Ассортимент</h1>
+            <!--<div class="bredcromb">Ассортимент / мясные изделия</div>-->
+            </div>
+            <div class="f-r">
+            <?php 
+            
+            if(count($prd->getallmanufact())>0)
+            {
+                $fi=$prd->getallmanufact();
+                echo "<table class='firm-logo'><tr>";
+                foreach($fi as $fiindex=>$fival)
+                {
+                    //$fival['photo']=$prd->formatoutputphoto($fival['photo']);
+                    $photo_f=str_replace('.','',$fival['photo']);
+                    $photo_f=str_replace('-','_',$photo_f);
+                    $img_left=($fiindex!=0)?"imga-ass-left":"";
+                    
+                    if(file_exists($root."/img/firm/fsize1/".$photo_f."_ass.jpg"))
+                    {
+                        if(!empty($fival['link']))
+                        {
+                            echo "<td style='vertical-align:middle;'><a class='".$img_left."' href='".$fival['link']."'><img alt='".$fival['name']."' title='".$fival['name']."' src='../img/firm/fsize1/".$photo_f."_ass.jpg' /></a></td>";
+                        }
+                        else
+                        {
+                            echo "<td style='vertical-align:middle;'><img class='".$img_left."' alt='".$fival['name']."' title='".$fival['name']."' src='../img/firm/fsize1/".$photo_f."_ass.jpg' /></td>";
+                        }
+                    }
+                    else
+                    {
+                        if(!empty($fival['link']))
+                        {
+                            echo "<td style='vertical-align:middle;'><a class='".$img_left."' href='".$fival['link']."'><img alt='".$fival['name']."' title='".$fival['name']."' src='../img/firm/fsize1/firm-empty_ass.png' /></a></td>";
+                        }
+                        else
+                        {
+                            echo "<td style='vertical-align:middle;'><img class='".$img_left."' alt='".$fival['name']."' title='".$fival['name']."' src='../img/firm/fsize1/firm-empty_ass.png' /></td>";
+                        }
+                    }
+                }
+            echo "<tr></table>";
+                //$prd->getallmanufactlogo();
+            }
+            echo '<div class="clear_both"></div>';
+            ?>
+            </div>
+            <div class="clear_both"></div>
+            <div class="block-product">
+                
+                <div class="filters-rad-h">
+                <table class="filters">
+                    <tr>
+                    <td>
+                        <div class="th">Категория</div>
+                        <?php
+                        $sql="SELECT c.id,c.name FROM categorygoods as c,goods as p WHERE p.idcategory=c.id AND p.setofgoogs=0 GROUP BY c.id ORDER BY c.name";
+                        $db->query($sql);
+                        $first="";
+                        $else="";
+                        if($db->getCount()>0)
+                        {
+                            $arrcat=$db->getArray();
+                            echo "<table style='width:100%;position:relative;'>";
+                            foreach($arrcat as $arrcatindex=>$arrcatval)
+                            {
+                                $select="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 AND idcategory=".$arrcatval['id'].$sql_cat;
+                                $db->query($select);
+                                if($db->getCount()>0)
+                                {
+                                    if($arrcatval['id']==$cat)
+                                    {
+                                        $first="<a href='#'>".$arrcatval['name']." (".$db->getCount().")</a>";
+                                    }
+                                    else
+                                    {
+                                        $else.="<tr><td><a href='".$catlink."/cat/".$arrcatval['id']."'>".$arrcatval['name']."&nbsp;(".$db->getCount().")"."</a></td></tr>";
+                                    }
+                                }
+                               
+                            }
+                            if(empty($first))
+                            {
+                                $first="<a href='#'>Выберите категорию</a>";
+                            }
+                            else
+                            {
+                                $else="<tr><td><a href='".$catlink."'>Выберите категорию</a></td></tr>".$else;
+                            }
+                            
+                        }
+                        echo "<tr><td class='filt-title'><div class='fil-title'>".$first."</div><div class='clear_both'></div><div class='show-hide-menu' style=''><table >".$else."</table></div>";
+                            echo "</table>";
+                            
+                         ?>
+                    </td>
+                    <td>
+                        <div class="th">Продукция</div>
+                        <?php
+                        $sql="SELECT g.id,g.name FROM typegoods as g,goods as p WHERE p.idtypegoods=g.id AND p.setofgoogs=0 GROUP by g.id ORDER BY g.name";
+                        $db->query($sql);
+                        $first="";
+                        $else="";
+                        if($db->getCount()>0)
+                        {
+                            $arrcat=$db->getArray();
+                            echo "<table style='width:100%;position:relative;'>";
+                            foreach($arrcat as $arrcatindex=>$arrcatval)
+                            {
+                                $select="SELECT * FROM goods WHERE deleted=0 AND displaylisting=1 AND setofgoogs=0 AND idtypegoods=".$arrcatval['id'].$sql_pr;
+                                $db->query($select);
+                                if($db->getCount()>0)
+                                {
+                                    if($arrcatval['id']==$pr)
+                                    {
+                                        $first="<a href='#'>".$arrcatval['name']." (".$db->getCount().")</a>";
+                                    }
+                                    else
+                                    {
+                                        $else.="<tr><td><a href='".$prlink."/pr/".$arrcatval['id']."'>".$arrcatval['name']."&nbsp;(".$db->getCount().")</a></td></tr>";
+                                    }
+                                }
+                            }
+                            if(empty($first))
+                            {
+                                $first="<a href='#'>Выберите продукцию</a>";
+                            }
+                            else
+                            {
+                                $else="<tr><td><a href='".$prlink."'>Выберите продукцию</a></td></tr>".$else;
+                            }
+                            
+                        }
+                        echo "<tr><td class='filt-title'><div class='fil-title'>".$first."</div><div class='clear_both'></div><div class='show-hide-menu' style=''><table>".$else."</table></div>";
+                            echo "</table>";
+                            
+                         ?>
+                    </td>
+                    <td >
+                        <div class="th">Вид продукции</div>
+                        <?php
+                        $sql="SELECT sg.id,sg.name FROM viewgoods as sg,goods as p WHERE p.idviewgoods=sg.id AND p.setofgoogs=0 GROUP BY sg.id ORDER BY sg.name";
+                        $db->query($sql);
+                        $first="";
+                        $else="";
+                        if($db->getCount()>0)
+                        {
+                            $arrcat=$db->getArray();
+                            echo "<table style='width:100%;position:relative;'>";
+                            foreach($arrcat as $arrcatindex=>$arrcatval)
+                            {
+                                $select="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 AND idviewgoods=".$arrcatval['id'].$sql_vpr;
+                                $db->query($select);
+                                if($db->getCount()>0)
+                                {
+                                    if($arrcatval['id']==$vpr)
+                                    {
+                                        $first="<a href='#'>".$arrcatval['name']." (".$db->getCount().")</a>";
+                                    }
+                                    else
+                                    {
+                                        $else.="<tr><td><a href='".$vprlink."/vpr/".$arrcatval['id']."'>".$arrcatval['name']."&nbsp;(".$db->getCount().")</a></td></tr>";
+                                    }
+                                }
+                                
+                            }
+                            if(empty($first))
+                            {
+                                $first="<a href='#'>Выберите вид продукции</a>";
+                            }
+                            else
+                            {
+                                $else="<tr><td><a href='".$vprlink."'>Выберите вид продукции</a></td></tr>".$else;
+                            }
+                            
+                        }
+                         echo "<tr><td class='filt-title'><div class='fil-title'>".$first."</div><div class='clear_both'></div><div class='show-hide-menu' style=''><table>".$else."</table></div>";
+                            echo "</table>";
+                            
+                         ?>
+                    </td>
+                     <td >
+                        <div class="th">Производитель</div>
+                         <?php
+                        $sql="SELECT f.id,f.name FROM manufacturers as f,goods as p WHERE f.id=p.idmanufacturers AND p.setofgoogs=0 GROUP BY f.id ORDER BY f.name";
+                        $db->query($sql);
+                        $first="";
+                        $else="";
+                        if($db->getCount()>0)
+                        {
+                            $arrcat=$db->getArray();
+                            echo "<table style='width:100%;position:relative;'>";
+                            foreach($arrcat as $arrcatindex=>$arrcatval)
+                            {
+                                $select="SELECT * FROM goods WHERE deleted=0 AND displaylisting=1 AND setofgoogs=0 AND idmanufacturers=".$arrcatval['id'].$sql_firm;
+                                $db->query($select);
+                                if($db->getCount()>0)
+                                {
+                                    if($arrcatval['id']==$firm)
+                                    {
+                                        $first="<a href='#'>".$arrcatval['name']." (".$db->getCount().")</a>";
+                                    }
+                                    else
+                                    {
+                                        $else.="<tr><td><a href='".$firmlink."/firm/".$arrcatval['id']."'>".$arrcatval['name']."&nbsp;(".$db->getCount().")</a></td></tr>";
+                                    }
+                                }
+                                
+                            }
+                            if(empty($first))
+                            {
+                                $first="<a href='#'>Выберите производителя</a>";
+                            }
+                            else
+                            {
+                                $else="<tr><td><a href='".$firmlink."'>Выберите производителя</a></td></tr>".$else;
+                            }
+                            
+                        }
+                         echo "<tr><td class='filt-title'><div class='fil-title'>".$first."</div><div class='clear_both'></div><div class='show-hide-menu' style=''><table>".$else."</table></div>";
+                            echo "</table>";
+                            
+                         ?>
+                    </td>
+                    <td class="no-back delete-filters" style="width:10%"><a href='assortment/full'>Сбросить&nbsp;все&nbsp;фильтры</a></td>
+                    </tr>
+                </table>
+                </div>
+                <?php
+                $more=0;
+                $firstout=0;
+                $all=0;
+                $sql="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 ".$sql_output;
+                $db->query($sql);
+                if($db->getCount()>0)
+                {
+                    $arrpro=$db->getArray();
+                    $all=count($arrpro);
+                    if(count($arrpro)>20) {$firstout=20;$more=1;}
+                    echo "<ul class='ass-all'>";
+                    foreach($arrpro as $arrproindex=>$arrproval)
+                    {
+                        if($firstout!=0 AND $firstout==$arrproindex) break;
+                        if(($arrproindex+1)%4==0)
+                        {
+                            echo "<li class='no-margin-r'>";
+                        }
+                        else  echo "<li>";
+                        if(!empty($arrproval['photo']))
+                        {
+                            $photo=str_replace('.','',$arrproval['photo']);
+                            $photo=str_replace('-','_',$photo);
+                            $new=($arrproval['new']==1)?"<div class='new_sales'></div>":"";
+                            $hot=($arrproval['hot_products']==1)?"<div class='hit_sales'></div>":"";
+                            if(file_exists($root."/img/products/fsize1/".$photo."_ass.jpg"))
+                            {
+                                echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/assortiment'><img src='../img/products/fsize1/".$photo."_ass.jpg' /></a></div>";
+                                echo "<div class='clear_both'></div>"; 
+                            }
+                            else
+                            {
+                                 echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/assortiment'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                                 echo "<div class='clear_both'></div>";
+                            }
+                        }
+                        else
+                        {
+                             echo "<div>".$new." ".$hot."<a href='/product/more/id/".$arrproval['id']."/from/assortiment'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                             echo "<div class='clear_both'></div>";
+                        }
+                        //echo $returnphoto;
+                       // echo  $prd->kkzphoto($arrproval['photo'],$arrproval['id']);
+                             
+                        echo "<a class='name' href='/product/more/id/".$arrproval['id']."/from/assortiment'>".$arrproval['name']."</a>";
+                        echo "<div class='after-name'></div>";
+                        echo $prd->getmanufname($arrproval['idmanufacturers']);
+                        $base_ed=$prd->getpricefor($arrproval['id_base_ed_iz']);
+                        if(!empty($base_ed))
+                        {
+                                echo "<br />";
+                                echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($arrproval['id']).' грн</div>';
+                        }
+                        if(!empty($arrproval['weight']))
+                        {
+                             echo "<div class='other f-l'>Вес : ".$arrproval['weight']."</div>";
+                        }
+                       
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                }
+                ?> 
+                </div>
+            </div>
+              <div class="clear_both"></div>
+            <?php if($more==1) {?>
+            <div class="mar_0_auto mar_top_15 "><a class="all_product ass-show-more" data-all="<?php echo $all;?>" data-d="<?php echo $cat."/".$pr."/".$vpr."/".$firm;?>" data-more="<?php echo $more;?>" href="#">Показать&nbsp;еще</a></div>
+            <?php } ?>
+            <div class="delim-sh"></div>
+             <div class="clear_both"></div>
+             
+             <div>
+             <ul class="uderfooter">
+                <li class="">
+                    <div class="uderfooter-li7-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/delivery">Доставка и оплата</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left">
+                    <div class="uderfooter_cust-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/about">О компании</a>
+                        <br /><br />
+                         «Высший сорт» - успешная компания с многолетним опытом в сфере дистрибуции продуктов питания на территории Восточной Украины.
+                    </div>
+                </li>
+                <li class="left ">
+                    <div class="uderfooter-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/kkz">Корпоративная-коллективный заказ</a>
+                        <br /><br />
+                        Порадовать новинками, ознакомить с действующими специальными предложениями и дисконтной программой. Порадовать новинками, ознакомить.
+                    </div>
+                </li>
+                <li class="left ">
+                      <div class="uderfooter_cust-li2-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/customers">Клиентам</a>
+                        <br /><br />
+                     Клиенты компании «Высший сорт», становится представителями крупной торговой сети и получают возможность развития собственного бизнеса на льготных условиях.
+                   </div>
+                </li>
+             </ul>
+             </div>
+        </div>
+        
+</div>
+<script type="text/javascript">
+$(function()
+{
+    var assfiltertouch=false;
+    var istouch=(!!('ontouchstart' in window))?'touchstart':'click';
+    $(document).on('mouseover','.filt-title',function()
+    {
+        $(this).addClass('hover')
+        $('.show-hide-menu',$(this)).show();
+    }).on('mouseout','.filt-title',function()
+    {
+        $(this).removeClass('hover')
+        $('.show-hide-menu',$(this)).hide();
+    }).on('touchstart','.filt-title',function()
+    {
+        if(!assfiltertouch)
+        {
+            $(this).parents('.filters').removeClass('hover')
+            $('.show-hide-menu',$(this).parents('.filters')).hide();
+            $(this).addClass('hover')
+            $('.show-hide-menu',$(this)).show();
+            assfiltertouch=true
+        }
+        else
+        {
+            $(this).removeClass('hover')
+            $('.show-hide-menu',$(this)).hide();
+            assfiltertouch=false
+        }
+        return false
+        
+    }).on(istouch,'.fil-title a',function()
+        {
+            return false;
+        })
+
+    
+})
+</script>

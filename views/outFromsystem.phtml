@@ -1,0 +1,24 @@
+<?php 
+session_start();
+if(!empty($_SESSION['client']['nc']) OR !empty($_SESSION['client']['p']))
+{
+   unset($_SESSION['client']);
+}
+$from="";
+if($controller->paramsArray[0]=='from')
+{
+    for($i=1;$i<count($controller->paramsArray);$i++)
+    {
+        $from.="/".$controller->paramsArray[$i];
+    }
+}
+else
+{
+    $from="/";
+}
+$client=array();
+array_merge($client,array('id'=>''),array('n'=>''),array('nc'=>''),array('p'=>''),array('d'=>''),array('n'=>''),array('ad'=>''),array('porc'=>''));
+$_SESSION['client']=$client;
+//header('Location:'.$from);
+header('Location:/kkz');
+?>

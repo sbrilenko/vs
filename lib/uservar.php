@@ -1,0 +1,46 @@
+<?php
+if(empty($_SESSION['arrayname']))
+{
+    $arrayname=array();
+    $arrayorder=array();
+    $client=array();
+    for($i=1;$i<=20;$i++)
+    {
+        array_push($arrayname,"покупатель(".$i.")");
+        array_push($arrayorder,array());
+    }
+    $_SESSION['active']=0;
+    $active=0;
+    $_SESSION['arrayname']=$arrayname;
+    $_SESSION['arrayorder']=$arrayorder;
+    array_merge($client,array('id'=>''),array('n'=>''),array('nc'=>''),array('p'=>''),array('d'=>''),array('n'=>''),array('ad'=>''),array('porc'=>''),array('new'=>0),array('iscard'=>0));
+    $_SESSION['client']=$client;
+}
+else
+{
+    $arrayname=$_SESSION['arrayname'];
+    if(!empty($_SESSION['arrayorder']))
+    {
+      $arrayorder=$_SESSION['arrayorder'];  
+    }
+    else
+    {
+      $arrayorder=array();
+      $_SESSION['arrayorder']=$arrayorder;
+    }
+    if(isset($_SESSION['active']))
+    {
+        $active=$_SESSION['active'];
+    }
+    else
+    {
+        $active=0;
+        $_SESSION['active']=$active;
+    }
+    if(isset($_SESSION['client']))
+    {
+        $client=$_SESSION['client'];
+    }
+    $_SESSION['arrayname']=$arrayname;
+}
+?>

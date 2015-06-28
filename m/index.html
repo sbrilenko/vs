@@ -1,0 +1,146 @@
+
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'><html xmlns='http://www.w3.org/1999/xhtml' lang='ru'>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+    <title></title>
+    <meta name='description' content='' />
+    <meta name='keywords' content='' />
+    <base href='#' />
+    <link rel='shortcut icon' href='../img/favicon.ico' />
+    <meta content="width=320, minimum-scale=1, maximum-scale=1" name="viewport" />
+    <link rel='stylesheet' href='/css/reset.css' type='text/css' media='screen' />
+    <link rel='stylesheet' href='/css/s320.css' id='fsize' type='text/css' media='screen' />
+    <link rel='stylesheet' media='screen and (max-device-width:639px)' href='/css/s320.css' type='text/css' />
+    <link rel='stylesheet' media=' screen and (max-device-width:976px)' href='/css/s640.css' type='text/css' />
+    <script type='text/javascript' src='/js/jquery-1.8.2.js'></script>
+    <script type='text/javascript' src='/js/mindex.js'></script>
+</head>
+<body>
+<div class="header-top-back">
+    <div class="margin_auto width4size header_h">
+    <div class="body-margin">
+        <div class="logo background_none ">
+            <a href="#"><div class="logo"></div></a>
+        </div>
+         <div class="phone">(050) 425-35-05 (0642) 55-57-71</div>
+
+    </div>
+    
+    </div>
+    <div class="clear_both"></div>
+    <div class="after-header-ot"></div>
+    <div class="clear_both"></div>
+    
+
+        <div class="margin_auto width4size header_h">
+        <div class="body-margin">
+            <h1>Дистрибьюторская компания<br />OOO «Высший сорт»</h1>
+            <div class="block-product">
+                На данный момент компания владеет собственным автопарком, имеет достаточные площади специальных холодильных складских помещений для обработки до 40 тонн продукции в сутки по трем областям.
+                
+            </div>
+          <div class="buy-center"><a href="#"><div class="buy">Полная версия</div></a></div>
+          <div class="koord-ul">
+                <ul class="p-r">
+                <li class="bottom-ul1">
+                    <div class="text">Центральный офис (фактический):</div>
+                    <div class="text-desc">г. Макеевка,<br />ул. Депутатская, 19Г.<br />(050)&nbsp;425-35-05,<br />(0642)&nbsp;55-57-71</div>
+                </li>
+                <li class="bottom-ul2">
+                    <div class="text">Юридический адрес:</div>
+                    <div class="text-desc">г. Макеевка,<br />ул. Скнарева, 50А.<br />(062)&nbsp;341-16-91,<br />(050)&nbsp;470-31-31<br />(050)&nbsp;474-33-83</div>
+                </li>
+                <li class="bottom-ul3">
+                    <div class="text">Филиалы:</div>
+                     <div class="text-desc"><b>В Луганске:</b><br />(0642)&nbsp;55-57-71,<br />(050)&nbsp;425-35-05</div><div class="text-desc"><b>В Днепропетровске:</b><br />(056)&nbsp;760-45-43</div>
+                </li>
+            </ul>
+            </div>
+          
+          <div class="clear_both"></div>
+          <div class="f-sh-delim"></div>
+          <div class="clear_both"></div>  
+           <div class="">
+                <div class="footer-text">
+               &copy;&nbsp;2013&nbsp;Торговый дом&nbsp;ООО&nbsp;«Высший сорт»
+                </div>
+            </div>
+                <div class="soc">
+                    <a href="#" class="f-l facebook"></a>
+                    <a href="#" class="f-l vk"></a>
+                    <a href="#" class="f-l youtube"></a>
+                    <a href="#" class="f-l gp"></a>
+                </div>  
+           
+                
+        </div>
+</div>
+            
+
+<div class="footer-bottom-back"></div>
+<div class="clear_both"></div>
+<script type="text/javascript">
+$(function()
+{
+    $(document).on('click touchstart','#bottom-f #click-reg',function()
+    {
+        if($('#bottom-f:animated').length) { return false;}
+        else
+        {
+            if($('#bottom-f').hasClass('active'))
+            {
+                $("#bottom-f").animate({top:0}, 1000, function() {$('#bottom-f').removeClass('active')});
+                $(".koord-ul ul").animate({height:0}, 1000, function() {});
+                $('.white-koord-back').animate({height:0}, 1000, function() {});
+                $('.bottom-arrow').removeClass('active')
+                
+            }
+            else
+            {
+                var size=('innerWidth' in window) ? window.innerWidth : document.body.offsetWidth;
+                var h=117;
+                if(size<1200) {h=117;}
+                else
+        		if (size>=1201 && size<1599) {h=130;}
+        		else
+                if (size>=1600) {h=150;}
+                $("#bottom-f").animate({top:(-1)*h}, 1000, function() {$('#bottom-f').addClass('active')});
+                $(".koord-ul ul").animate({height:h}, 1000, function() {});
+                $('.white-koord-back').animate({height:h}, 1000, function() {});
+                $('.bottom-arrow').addClass('active')
+                
+            }
+        }
+        
+    })
+    var doit;
+    $(window).bind('resize',function(){
+      clearTimeout(doit);
+      doit = setTimeout(function(){
+      if($('#bottom-f:animated').length) { return false;}
+      else
+      {
+        if($('.koord-ul ul').is(':visible') && $('#bottom-f').hasClass('active'))
+            {
+                var size=('innerWidth' in window) ? window.innerWidth : document.body.offsetWidth;
+                var h=117;
+                if(size<1200) {h=117;}
+                else
+        		if (size>=1201 && size<1599) {h=130;}
+        		else
+                if (size>=1600) {h=150;}
+                $("#bottom-f").css({top:(-1)*h});
+                $(".koord-ul ul").css({height:h});
+                $('.white-koord-back').css({height:h});
+                
+            }
+      }
+            
+        
+} , 100)
+})
+})
+
+</script>
+
+</body></html>

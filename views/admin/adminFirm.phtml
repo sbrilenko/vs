@@ -1,0 +1,41 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'firm';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad(); // Создаем экземпляр класса Sample
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Производители</div>
+		<?php
+        echo $form -> formb('form','form','post','multipart/form-data','','','','');
+        $page->setTitle('Производители | Высший сорт');
+        echo '<a href="/admin/firmEditor/add">+ ДОБАВИТЬ ПРОИЗВОДИТЕЛЯ</a>';
+        $db -> query("SELECT * FROM sfirms WHERE archive=0 ORDER BY name ASC");
+        $count = $db -> getCount();
+        if ($count > 0) 
+        {
+            $firms = $db -> getArray();
+            echo '<ul>';
+            foreach($firms as $i => $firm)
+            {
+                echo '<li style="text-align:left">';
+                echo $firm['name'];
+                echo '&emsp;<a href="/admin/firmEditor/edit/'.$firm['id'].'"><img src="/img/admin/e.png" title="Редактировать"/></a>';
+                echo '&emsp;<a class="delfirm" href="/admin/firmEditor/delete/'.$firm['id'].'"><img src="/img/admin/d.png" title="Удалить"/></a>';
+                echo $DLL -> getCreateUpdate($firm['idUserCreate'],$firm['dtCreate'],$firm['idUserUpdate'],$firm['dtUpdate']);
+                echo'<div style="clear:both"></div>';
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+        echo $form->forme();
+        ?>
+        
+
+    </td>
+  </tr>

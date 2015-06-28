@@ -1,0 +1,1 @@
+$(function(){$("input[name=phone] ,input[name=pactive]").mask("+38 (999) 999 99 99");})

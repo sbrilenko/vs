@@ -1,0 +1,171 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'order';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad();
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="back"><a href="/admin/">НАЗАД</a></div>
+        <div class="title">Просмотр заказа</div>
+		<?php 
+        //если не еще не открывался заказ
+        $db -> query("SELECT new FROM `orders` WHERE id = {$id}");
+        if ($db -> getCount()) $new = $db -> getValue(); 
+            if ($new)
+            $db -> query("UPDATE `orders` SET idUser = '".$_SESSION['userID']."', dtOpen = '".$dtClass -> dtInDB()."', new = 0 WHERE id = {$id}");  
+        
+        //вся инфа о заказе
+        echo '<fieldset>';
+        $db -> query("SELECT * FROM `orders` WHERE id = {$id}");
+        $count = $db -> getCount();
+        if ($count > 0) 
+        {
+            $order = $db -> getRow();
+           
+            $user = $DLL -> getUser($_SESSION['userID']);
+  
+                $db -> query("SELECT * FROM `clients` WHERE id = {$order['idClient']}");
+                if ($db -> getCount() > 0) $client = $db -> getRow();
+                
+                echo "<table style='width:100%;'>";
+                    echo "<tr>";
+                        echo "<td width='130'>";
+                            echo '<span style="font-weight:normal">Заказ был создан:</span>';
+                        echo "</td>";
+                        
+                        echo "<td width='348'><b>";
+                            echo $dtClass -> dtFromDB($order['dtOrder']);
+                        echo "</b></td>";
+                        
+                        echo "<td width='130'>";
+                            echo '<span style="font-weight:normal">Заказ обработан:</span>';
+                        echo "</td>";
+                        
+                        echo "<td width='348'><b>";
+                            echo $dtClass -> dtFromDB($order['dtOpen']);
+                        echo "</b></td>";
+                    echo "</tr>";
+                    echo "<tr>";
+                        echo "<td></td><td></td>";
+                        
+                        echo "<td>";
+                            echo '<span style="font-weight:normal">Пользователем:</span>';
+                        echo "</td>";
+                        
+                        echo "<td><b>";
+                            echo $user;
+                        echo "</b></td>";
+                    echo "</tr>";
+                echo "</table>";
+                echo '</fieldset>';
+                    
+                echo '<fieldset>';
+                    echo '<legend>Информация о заказчике (<a href="/admin/clientsEditor/edit/'.$order['idClient'].'">Изменить информацию о клиенте</a>)</legend>';
+                    echo "<table style='width:100%;' class='orderTable'>";
+                        echo "<tr>";
+                            echo "<td width='150'>";
+                                echo '<span style="font-weight:normal">ФИО заказчика:</span>';
+                            echo "</td>";
+                            
+                            echo "<td><b>";
+                                echo ($client['name']) ? $client['name'] : 'unknown';
+                            echo "</b></td>";
+                        echo "</tr>";
+                            if ($client['namberCard'])
+                            {
+                                echo "<tr><td width='150'>Номер карты:</td>";
+                                echo "<td><b>".$client['namberCard']."</b></td></tr>";
+                            }
+                            if ($client['phone'])
+                            {
+                                echo "<tr><td width='150'>Телефон:</td>";
+                                echo "<td><b>".$client['phone']."</b></td></tr>";
+                            }
+                            if ($client['idAddress'])
+                            {
+                                echo "<tr><td width='150'>Адрес:</td>";
+                                echo "<td><b>".$client['idAddress']."</b></td></tr>";
+                            } 
+                            if ($client['discount'])
+                            {
+                                echo "<tr><td width='150'>Скидка:</td>";
+                                echo "<td><b>".$client['discount']." %</b></td></tr>";
+                            } 
+                            if ($client['address'])
+                            {
+                                echo "<tr><td width='150'>Адрес доставки:</td>";
+                                echo "<td><b>".$client['address']."</b></td></tr>";
+                            } 
+                        
+                        
+                    echo "</table>";
+                echo '</fieldset>';
+                
+                // заказанные товары
+                echo '<fieldset>';
+                    echo '<legend>Заказанные товары</legend>';
+                    echo "<table style='width:100%;' class='orderTableBorderTd'>";
+                        echo "<tr>";
+                            echo "<td width='30'></td>";
+                            echo "<td width='30'></td>";
+                            echo "<td>Наименование</td>";
+                            echo "<td width='50'>Кол-во</td>";
+                            echo "<td width='80'>Цена с учетом скидки ".$client['discount']." %</td>";
+                        echo "</tr>";
+                        
+   
+    $alltotal=0;
+    $order_=unserialize($order['ordero']);
+    $name_=unserialize($order['orderoname']);
+    $nom=0;
+    foreach($order_ as $index=>$val)
+    {
+        if(!empty($val))
+        {
+            echo "<tr><td colspan='6'>".$name_[$index]."</td></tr>";
+            foreach($val as $val_index=>$val_val)
+            {
+                $sql="SELECT * FROM products WHERE id=".$val_val['id'];
+                $db->query($sql);
+                if($db->getCount()>0)
+                {
+                    $arr_p=$db->getArray();
+                    echo "<tr><td></td><td></td>";
+                    foreach($arr_p as $arr_p_index=>$arr_p_val)
+                    {
+                        echo "<td>";
+                        echo $arr_p_val['nameSearch'];
+                        echo "</td>";
+                        echo "<td>";
+                        echo $val_val['k'];
+                        echo "</td>";
+                        echo "<td>";
+                        echo number_format($val_val['k']*$arr_p_val['price']-$val_val['k']*$arr_p_val['price']*($order['discount']/100),2,'.','')." грн";
+                        $alltotal+=number_format($val_val['k']*$arr_p_val['price']-$val_val['k']*$arr_p_val['price']*($order['discount']/100),2,'.','');
+                        echo "</td>";
+                    }
+                    echo "</tr>";
+                }        
+            }
+        }
+         
+    }
+    
+    echo "<tr ><td colspan='6' style='text-align:center;'>Общая сумма заказа ".$alltotal." грн</td></tr>";
+    
+                        
+                    echo "</table>";
+                echo '</fieldset>';
+                
+        }else echo 'Error!';
+        //echo $form->forme();
+        ?>
+    </td>
+  </tr>

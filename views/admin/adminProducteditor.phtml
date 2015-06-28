@@ -1,0 +1,351 @@
+<?php
+    $db = db :: getInstance(); 
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+    
+    if ($action != 'delete' and $action != 'edit' and $action != 'add') header("Location: /admin/product");
+    
+    if ($action == 'delete')
+    {
+        //удалим в архив данный товр в составе
+        $db -> query("UPDATE sostav SET archive=1 WHERE id_ass = {$id}");
+        $db -> query("UPDATE products SET archive=1 WHERE id = {$id}");
+        header("Location: /admin/product");
+        exit();
+    }
+    
+    if ($action == 'edit')
+    {
+        $db -> query("SELECT * FROM products WHERE id = {$id}");
+        $product = $db -> getRow();
+        if (!$product) header("Location: /admin/product");  
+    }
+    else $action = 'add';
+    $sFirm = ($product['idFirm']) ? $DLL -> greateSelect('sfirms','',$product['idFirm'],'width:350px;float:left;') : $sFirm = $DLL -> greateSelect('sfirms','Выберите производителя',0,'width:350px;float:left;');
+    
+    $sSection = ($product['category']) ? $DLL -> greateSelect('category','',$product['category'],'width:350px;float:left;') : $DLL -> greateSelect('category','Выберите категорию продукции',0,'width:350px;float:left;') ;
+    $sGroup = ($product['idGroup']) ? $DLL -> greateSelect('sgroups','',$product['idGroup'],'width:350px;float:left;') : $DLL -> greateSelect('sgroups','Выберите продукцию',0,'width:350px;float:left;','');
+    $sSubgroup = ($product['idSubgroup']) ? $DLL -> greateSelect('ssubgroups','',$product['idSubgroup'],'width:350px;float:left;') : $DLL -> greateSelect('ssubgroups','Выберите вид продукции',0,'width:350px;float:left;','');
+    
+    $checked = ($product['presence']) ? 'checked="checked"' : null;
+    $checkedN = ($product['new']) ? 'checked="checked"' : null;
+    $checkedB = ($product['bestseller']) ? 'checked="checked"' : null;
+    $checkedE = ($product['event']) ? 'checked="checked"' : null;
+    if ($product['newOrSecond']) 
+    {
+        $checkedSecond = 'checked="checked"';
+        $checkedNew = null;
+    }
+    else 
+    {
+        $checkedNew = 'checked="checked"';
+        $checkedSecond = null;
+    }
+
+    $checkedP1 = ($product['presence'] == 0) ? 'checked="checked"' : null;;
+    $checkedP2 = ($product['presence'] == 1) ? 'checked="checked"' : null;
+    $checkedP3 = ($product['presence'] == 2) ? 'checked="checked"' : null;
+    $checkedP4 = ($product['presence'] == 3) ? 'checked="checked"' : null;
+    $kkz = ($product['kkz'] == 1) ? 'checked="checked"' : 0;
+    $checkedShow = ($product['show']) ? 'checked="checked"' : null;
+    $checkedShow = ($action == 'add') ? 'checked="checked"' : $checkedShow;
+?>
+<tr>
+<td class='head'>
+<?php
+    $tut = 'product';
+    include "menu.php"; 
+    $form = new ad(); // Создаем экземпляр класса Sample
+    $idNext = ($db -> last('products') + 1);
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="back"><a href="/admin/product">НАЗАД</a></div>
+        <div class="title"><?=($action == 'add')?'Добавление':'Редактирование';?> товара</div>
+		<?php
+        ($action == 'add')?$page->setTitle('Добавление товара | Высший сорт'):$page->setTitle('Редактирование товара | Высший сорт');
+        echo '<input type="hidden" name="whatPageEditor" value="productEditor">';
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/products/product.php',"$('form#form input[type=file]').attr('disabled',true);","
+        //console.log(responseText);
+        if (responseText.indexOf('error') == -1) 
+        {
+            var m = 'Товар сохранен!\\nНажмите:\\n   OK - для возврата ко всем товарам.\\n   Отмена - продолжить редактирование этого товара.';
+            if (confirm(m)) location.href='/admin/product';
+            ".(($action == 'add') ? 'else location.href="/admin/productEditor/edit/'.$idNext.'";' : "" )." 
+            $('form#form input[type=file]').attr('disabled',false)
+            return false;
+        }
+        else
+        {
+            $('form#form input[type=file]').attr('disabled',false);
+        	alert(responseText.replace(/<.*?>/g, ''));
+            
+        }
+        
+        ");
+        if($action == 'edit')
+        {
+            $btn = 'edit';
+            echo $form->input_('hidden','id','','',$id,'',0);
+            $sql_p="SELECT md5_mictotime FROM productsphotos WHERE id_product=".$product['id']." AND temp=1";
+            $db->query($sql_p);
+            if($db->getCount()>0)
+            {
+                echo $form->input_('hidden','temp','','',$db->getValue(),'',0);
+            }
+            else
+            {
+                echo $form->input_('hidden','temp','','',md5(microtime()),'',0);
+            }
+        }
+        else
+        {
+            echo $form->input_('hidden','temp','','',md5(microtime()),'',0);
+            $btn = 'add';
+        }
+        echo $form->input_('hidden','action','','',$action,'',0);
+        echo $DLL -> getCreateUpdate($product['idUserCreate'],$product['dtCreate'],$product['idUserUpdate'],$product['dtUpdate']);
+        echo "<table style='width:100%;' class='productEdit'>";
+            
+
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Показывать товар на сайте:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','show','','','','float:left;',0,'','','',$checkedShow);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Новинка:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','new','','','','float:left;',0,'','','',$checkedN);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Хит продаж:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','bestseller','','','','float:left;',0,'','','',$checkedB);
+            echo "</td></tr>";
+            
+            /*echo "<tr><td>";
+            echo $form -> titleandhelp('Акция:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('checkbox','event','','','','float:left;',0,'','','',$checkedE);
+            echo "</td></tr>";*/
+            
+            /*echo "<tr><td>";
+            echo $form -> titleandhelp('Состояние:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('radio','newOrSecond','','','0','margin:3px 4px 10px 4px',0,'','','',$checkedNew).' - новый';
+            echo $form -> input_('radio','newOrSecond','','','1','margin:3px 4px 10px 50px',0,'','','',$checkedSecond).' - б/у';
+            echo "</td></tr>";*/
+            
+            /*echo "<tr><td width='300'>";
+            echo $form -> titleandhelp('Наличие:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('checkbox','presence','','','1','margin:3px 4px 10px 4px',0,'','','',$checkedP2).' - есть в наличии';
+            echo "</td></tr>";*/
+            
+            /////
+            echo "<!--<tr><td width='300'>";
+            echo $form -> titleandhelp('Корпоративно-коллективный заказ:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('checkbox','kkz','','','1','margin:3px 4px 10px 4px',0,'','','',$kkz);
+            echo ($product['kkz']==1)?"<table class='kkz'>":"<table class='kkz' style='display:none;'>";
+            echo "<tr>";
+            echo "<td style='padding: 5px 0 0 0;'>Цена";
+            echo "</td>";
+            echo "<td>";
+            echo $form -> input_('text','pricekkz','pricekkz','onlynumbers',$product['pricekkz'],'width:100px;float:left;','');
+            echo "</td>";
+            echo "<td style='padding: 5px 0 0 0;text-align:center;'>";
+            echo "за";
+            echo "</td>";
+            echo "<td colspan='2'>";
+            echo "<select id='pricekkzed' name='pricekkzed' style='margin:2px 0 0 0px;width: 50px;float: left;padding: 0;height: 22px;'>";
+            echo ($product['pricekkzed']=='кг.')?"<option selected='selected' value='кг.'>кг.</option>":"<option value='кг.'>кг.</option>";
+            echo ($product['pricekkzed']=='гр.')?"<option selected='selected' value='гр.'>гр.</option>":"<option value='гр.'>гр.</option>";
+            echo ($product['pricekkzed']=='л.')?"<option selected='selected' value='л.'>л.</option>":"<option value='л.'>л.</option>";
+            echo ($product['pricekkzed']=='шт.')?"<option selected='selected' value='шт.'>шт.</option>":"<option value='шт.'>шт.</option>";
+            echo "</select>";
+            echo "</td>";
+            echo "<td></td>";
+            echo "</tr>";
+            
+            echo "<tr>";
+            echo "<td style='padding: 5px 0 0 0;'>Цена";
+            echo "</td>";
+            echo "<td>";
+            echo $form -> input_('text','price','price','onlynumbers',$product['price'],'width:100px;float:left;','');
+            echo "</td>";
+            echo "<td style='padding: 5px 0 0 0;text-align;center;'>за вес";
+            echo "</td>";
+            echo "<td>";
+            echo $form -> input_('text','weightkkz','weightkkz','onlynumbers',$product['weightkkz'],'width:100px;float:left;','');
+            echo "</td>";
+            echo "<td style='padding: 5px 0 0 0;text-align:center;'>в";
+            echo "</td>";
+            echo "<td>";
+            echo "<select id='weightkkzed' name='weightkkzed' style='margin:2px 0 0 0px;width: 50px;float: left;padding: 0;height: 22px;'>";
+            echo ($product['weightkkzed']=='кг.')?"<option selected='selected' value='кг.'>кг.</option>":"<option value='кг.'>кг.</option>";
+            echo ($product['weightkkzed']=='гр.')?"<option selected='selected' value='гр.'>гр.</option>":"<option value='гр.'>гр.</option>";
+            echo ($product['weightkkzed']=='л.')?"<option selected='selected' value='л.'>л.</option>":"<option value='л.'>л.</option>";
+            echo ($product['weightkkzed']=='шт.')?"<option selected='selected' value='шт.'>шт.</option>":"<option value='шт.'>шт.</option>";
+            echo "</select>";
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+            echo "</td></tr>-->";
+            /////
+            
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Приоритет:','Порядок отображения на сайте<br />Чем больше число, тем выше товар','text-align:left');
+            echo "</td><td>";
+            echo $form -> select('priority','priority','','width:350px;float:left;',array(1 => 1, 2 => 2, 3 => 3 , 4 => 4, 5 => 5),'','',$product['priority'],$product['priority']);
+            echo "</td></tr>";
+        
+            /*echo "<tr><td>";
+            echo $form -> titleandhelp('Рейтинг товара:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> select('rating','rating','','width:350px;float:left;',array(0 => '0', 1 => 1, 2 => 2, 3 => 3 , 4 => 4, 5 => 5),'','',($product['rating']) ? $product['rating'] : 0,($product['rating']) ? $product['rating'] : 0, true);
+            echo "</td></tr>";*/
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Производитель:','','text-align:left');
+            echo "</td><td>";
+            echo $sFirm;
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Категория продукции:','','text-align:left');
+            echo "</td><td>";
+            echo $sSection;
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Продукция:','','text-align:left');
+            echo "</td><td>";
+            echo "<span id='forSelectGroup'>";
+                echo $sGroup;
+            echo"</span>";                
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Вид продукции:','','text-align:left');
+            echo "</td><td>";
+            echo "<span id='forSelectSubgroup'>";
+                echo $sSubgroup;
+            echo"</span>";
+            echo "</td></tr>";
+        
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Артикул:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','article','','',$product['article'],'width:350px;float:left;',0);
+            echo "</td></tr>";
+            
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('*Наименовние товара:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','nameSearch','','',$product['nameSearch'],'width:350px;float:left;',0);
+            echo "</td></tr>";
+            
+            /*echo "<tr><td>";
+            echo $form -> titleandhelp('Цена:','Только цифры! Не используется','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','price','','onlynumbers',$product['price'],'width:350px;float:left;',0);
+            echo "</td></tr>";*/
+            
+            //echo "<tr><td>";
+            //echo $form -> titleandhelp('Код 1С:','','text-align:left');
+            //echo "</td><td>";
+            //echo $form->input_('text','id1C','','',$product['id1C'],'width:350px;float:left;',0);
+            //echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Описание:','','text-align:left');
+            echo "</td><td>";
+            $description = $form -> replaceToDraw($product['description']);
+            $form -> drawEditor('description', $description,1,1,0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Состав:','Через запятую','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','composition','','',$product['composition'],'width:625px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Срок хранения:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','safe','','',$product['safe'],'width:625px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Условия хранения:','Если хотите указать градусы Цельсия, вставьте символы - &deg;&nbsp;C','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','storageconditions','','',$product['storageconditions'],'width:625px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Оболочка:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','shell','','',$product['shell'],'width:625px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Упаковка:','','text-align:left');
+            echo "</td><td>";
+            echo $form -> input_('text','pack','','',$product['pack'],'width:625px;float:left;',0);
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Без ГМО:','','text-align:left');
+            echo "</td><td>";
+            $chekgmo=($product['gmo'])?"checked='checked'":"";
+            echo $form->input_('checkbox','gmo','','','','float:left;',0,'','','',$chekgmo);
+            echo "</td></tr>";
+            
+             echo "<tr><td>";
+            echo $form -> titleandhelp('Средний вес:','','text-align:left');
+            echo "</td><td>";
+            if(!empty($product['weight']))
+            {
+                echo $form -> input_('text','weight','','',$product['weight'],'width:625px;float:left;',0);
+            }
+            else
+            {
+                echo $form -> input_('text','weight','','','','width:625px;float:left;',0);
+            }
+            
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Фотография',$text_p_desc,'text-align:left');
+            echo "</td><td>";
+            echo $form->input_('file','photo','photo','','','','image/png',0);
+            echo $form->input_('button','load_image','load_image','',$text_load_i,'','');
+            echo "<br /><span id='img_loader_photo_preview'></span>";
+            echo "<br /><span id='loaded_image_preview'>";
+            if(!empty($product['id']))
+            {
+                $sql_p="SELECT md5_mictotime FROM productsphotos WHERE id_product=".$product['id']." AND temp=1";
+                $db->query($sql_p);
+                if($db->getCount()>0)
+                {
+                    $md5=$db->getValue();
+                    $DLL -> drowPhotoBlock($md5);
+                }
+            }
+                
+            echo"</span>";
+            echo "</td></tr>";
+        echo "</table>";
+        echo $form->input_('submit',$btn,$btn,'btnSave','Сохранить','');
+        echo $form->forme();
+        ?>
+    </td>
+  </tr>

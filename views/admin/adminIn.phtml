@@ -1,0 +1,51 @@
+<?php
+
+session_start();
+session_destroy();
+
+SetCookie("login",'');
+SetCookie("password",'');
+// Подключаем шапку
+require_once "variables.php";
+
+?>
+<?='<input type="hidden" id="whatPage" value="login" />';?>
+  <tr>
+    <td class="head">
+ 	<?php
+            // Подключаем создателя
+            include ("creator.php");
+        ?>	
+    </td>
+  </tr>
+  <tr>
+    <td class='center' align='center' style="vertical-align: middle;">
+	<form name="log" method="post" action="/admin/login" >
+            <div id="loginFields">
+                <?php 
+                   if($controller->paramsArray[0]=='errorlogin' AND $controller->paramsArray[1]>0 AND $controller->paramsArray[1]<=8)
+                   //if ($controller -> hasParam('errorlogin'))
+        			{	
+                         echo "<p style='color:#CC0000; margin:3px;'>Ошибка: ".$errorLogin[$controller -> getParam('errorlogin')]."</p>";
+                    }
+                   
+                    $textLogin = 'Логин';
+                    $textPass = 'Пароль';
+
+                    echo "<p>".$textLogin." <input type='text' name='login' title='".$textLogin."'></p>";
+                    echo "<p>".$textPass ." <input type='password' name='pass' title='".$textPass."'></p>";
+
+                    echo "<input name='goIn' type='submit' value='Вход'>";
+                ?>
+            </div>
+	</form> 
+        <div id="helpIn">
+            <p>Для правильной работы админки неободимо включить JavaScript</p>
+            <p>Для корректной работы админки используйте
+                <a href='http://mozilla-russia.org/' target='_blank'>Firefox 4</a> или 
+                <a href='http://www.google.com/chrome/?hl=ru' target='_blank'>Google Chrome</a>
+            </p>            
+        </div>
+    </td>
+  </tr>
+  

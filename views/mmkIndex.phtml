@@ -1,0 +1,107 @@
+<?php
+$page->setTitle('Марьянский мясокомбинат');
+?>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Марьянский мясокомбинат</h1>
+            <div class="full-cont">
+			<div class="f-r mk-logo">
+				<div class="m-logo">
+				</div>			
+			</div>
+			<div class="mk-content">
+				<div class="preview">
+					<p class="pw">История Марьянского мясокомбината начинается с семейного дела — колбасного цеха.
+					Традиции и старинные грузинские рецепты легли в основу ассортимента продукции, 
+					отшлифованного несколькими поколениями.
+					</p>				
+				</div>
+				<div class="mk-desc">					
+						<p>В 2012 году произведено обновление производства. Построен новый комбинат. Установлено современное
+						оборудование от ведущих мировых производителей. Усилен контроль качества. Новое название комбината
+						появилось в результате слияния имен дочерей основателей производства: Марии и Марианны. 
+						</p>					
+						<p>В результате симбиоза семейных традиций и инноваций создан широкий ассортиментный ряд, получено 
+						стабильное качество, достигнуты высокие вкусовые показатели и конкурентоспособные цены. Многие виды
+						продукции не имеют аналогов,
+						благодаря разработкам эксклюзивных рецептов с применением оригинальных композиций специй.
+						</p>
+						
+						<div class="y-text-m">
+							<p class="it-mk last">Жесткая система контроля, совершенствование производства и осознание приоритетов покупателя позволяют
+							удовлетворять потребности клиентов максимально полно, учитывая запросы покупателей с разным уровнем достатка.
+							</p>						
+						</div>			
+				<div>			
+			</div>           
+        </div>
+        </div>
+        </div>
+		<div class="clear_both"></div>
+        <?php
+        $sql="SELECT * FROM goods WHERE deleted=0 AND setofgoogs=0 AND displaylisting=1 AND idmanufacturers='000000002' LIMIT 4";
+                $db->query($sql);
+                if($db->getCount()>0)
+                {
+                    echo '<div class="delim-sh"></div>';
+					 echo "	<p class='pw' style='margin:0; font-size:24px;'>Ассортимент</p>"; 
+                    $arrpro=$db->getArray();
+                    echo "<ul class='ass-all'>";
+                    foreach($arrpro as $arrproindex=>$arrproval)
+                    {
+                        if(($arrproindex+1)%4==0)
+                        {
+                            echo "<li class='no-margin-r'>";
+                        }
+                        else  echo "<li>";
+                        
+                        //echo  $prd->kkzphoto($arrproval['photo'],$arrproval['id']);
+                         if(!empty($arrproval['photo']))
+                        {
+                            $photo=str_replace('.','',$arrproval['photo']);
+                            $photo=str_replace('-','_',$photo);
+                            if(file_exists($root."/img/products/fsize1/".$photo."_ass.jpg"))
+                            {
+                                //echo "<img src='../img/products/fsize1/".$photo."_ass.png' />";
+                                echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/".$photo."_ass.jpg' /></a></div>";
+                                echo "<div class='clear_both'></div>"; 
+                            }
+                            else
+                            {
+                                 echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                                 echo "<div class='clear_both'></div>";
+                            }
+                        }
+                        else
+                        {
+                             echo "<div><a href='/product/more/id/".$arrproval['id']."'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                             echo "<div class='clear_both'></div>";
+                        }    
+                        echo "<a class='name' href='/product/more/id/".$arrproval['id']."'>".$arrproval['name']."</a>";
+                        echo "<div class='after-name'></div>";
+                        echo $prd->getmanufname($arrproval['idmanufacturers']);
+                        $base_ed=$prd->getpricefor($arrproval['id_base_ed_iz']);
+                        if(!empty($base_ed))
+                        {
+                                echo "<br />";
+                                echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($arrproval['id']).' грн</div>';
+                        }
+                        if(!empty($arrproval['weight']))
+                        {
+                             echo "<div class='other f-l'>Вес : ".$arrproval['weight']."</div>";
+                        }
+                       
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                    echo '<div class=" button_all_god " ><a class="all_product " style="padding-left:31px;" href="/assortment/full/cat/000000003/firm/000000002">Показать&nbsp;еще</a></div>';
+                }
+        ?>
+       <div class="clear_both"></div>
+	
+
+<div class="clear_both"></div>
+</div>
+</div>
+</div>

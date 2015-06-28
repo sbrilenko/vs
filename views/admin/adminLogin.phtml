@@ -1,0 +1,92 @@
+<?php
+// Подключаем конфигурацию и класс базы данных
+$root = $_SERVER['DOCUMENT_ROOT'];
+require_once  "class.symbianm.valid.php";
+//print_r($_POST);
+
+if(isset($_POST ['pass'])) 
+    if (!$pass = validClass::sanitiseString($_POST['pass']))
+       unset($pass);
+    
+if(isset($_POST ['login'])) 
+    if (!$login = validClass::sanitiseString($_POST['login']))
+       unset($login);    
+    
+//-------------------------------------------------------
+if (($redir = $_SERVER['HTTP_REFERER']) == ""){
+    die ("Error cod.:1 - Строка запроса пуста!");
+    exit;
+}
+//-------------------------------------------------------
+if (isset($login) && isset($pass)) {
+
+    //$pass=md5(md5(md5($pass)));  
+    $pass = md5($pass);  
+    $login = md5($login);
+    // Инициализируем подключение
+    $db = db :: getInstance();
+
+    $db -> query("SELECT id, login, pass, user FROM admin WHERE login='".$login."'");
+
+    if ($db -> getCount() > 0) {
+
+        $myrow = $db -> getRow();
+        
+        // Проверка пароля
+        if ($pass != $myrow['pass']) {
+            Header ("Location: in/errorLogin/7");
+            exit;
+        }
+        // Запускаем сессию
+         
+        session_start();
+        session_cache_limiter('nocache,private');
+        
+        // Вставляем переменные
+        $d = date('d');
+        $m = date('m');
+        $y = date('y');
+        $h = date('H');
+        $i = date('i');
+        $s = date('s');
+        
+        $f = mktime(8,0,0,$m,$d,$y);//начало дня
+        $t = mktime(20,0,0,$m,$d,$y);//конец дня
+        $n = mktime($h,$i,$s,$m,$d,$y);//сейчас
+        $e = mktime(20,0,0,$m,$d,$y);//восемь вечера
+        $l = time() + ($e - $n);//время жизни куки до 8 часов
+         
+        if ($n >= $f and $n < $t)
+        {
+            SetCookie("login",$myrow['login'],$l);
+            SetCookie("password",$myrow['pass'],$l);
+            SetCookie("UID",$myrow['id'],$l);
+        }
+        
+        $_SESSION['user_login'] = $myrow['login'];
+        $_SESSION['user_pass']  = $myrow['pass'];
+        $_SESSION['userID']  = $myrow['id'];
+        
+        Header ("Location: /admin/index");
+        exit;
+    }
+    else {
+        Header ("Location: in/errorLogin/4");
+        exit;
+    }
+} 
+else 
+    if (isset($login) && !isset($pass)) {
+        Header ("Location: in/errorLogin/3");
+        exit;
+    }
+    else
+        if (!isset($login) && isset($pass)) {
+            Header ("Location: in/errorLogin/2");
+            exit;
+        }
+        else {
+            Header ("Location: in/errorLogin/1");
+            exit;
+        }
+?>

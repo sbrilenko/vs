@@ -1,0 +1,159 @@
+<?php
+    $page->addScript('js/mask.js','js/mask-card.js','js/mask-phone.js');
+    $db = db :: getInstance(); 
+    $root = $_SERVER['DOCUMENT_ROOT'];
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+    
+    if ($action != 'delete' and $action != 'edit' and $action != 'add') header("Location: /admin/product");
+    
+    if ($action == 'delete')
+    {
+        $db -> query("UPDATE clients SET archive=1 WHERE id = {$id}");
+        header("Location: /admin/clients");
+        exit();
+    }
+    if ($action == 'edit')
+    {
+        $db -> query("SELECT * FROM clients WHERE id = {$id}");
+        $product = $db -> getRow();
+        if (!$product) header("Location: /admin/clients"); 
+    }
+    else $action = 'add';
+    
+?>
+<tr>
+<td class='head'>
+<?php
+    $tut = 'clients';
+    include "menu.php"; 
+    $form = new ad();
+    $idNext = ($db -> last('id') + 1);
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="back"><a href="/admin/clients">НАЗАД</a></div>
+        <div class="title"><?=($action == 'add')?'Добавление':'Редактирование';?> клиента</div>
+		<?php
+        ($action == 'add')?$page -> setTitle("Добавление клиента | высший сорт"):$page -> setTitle("Редактирование клиента | высший сорт");
+        echo '<input type="hidden" name="whatPageEditor" value="productEditor">';
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/clients/clients.php','console.log(jqForm);',"
+        console.log(responseText)
+        //return false;
+        if (responseText.indexOf('error') == -1) 
+        {
+            var m = 'Товар сохранен!\\nНажмите:\\n   OK - для возврата ко всем товарам.\\n   Отмена - продолжить редактирование этого товара.';
+            if (confirm(m)) location.href='/admin/clients';
+            else location.href='/admin/clientsEditor/edit/'+responseText;
+        }
+        else
+        {
+            $('form#form input[type=file]').attr('disabled',false);
+        	alert(responseText.replace(/<.*?>/g, ''));
+        }");
+        if($action == 'edit')
+        {
+            $btn = 'edit';
+            echo $form->input_('hidden','id','','',$id,'',0);
+        }
+        else
+        {
+            $btn = 'add';
+        }
+        echo $form->input_('hidden','action','','',$action,'',0);
+        echo "<table style='width:100%;' class='productEdit'>";
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Вход по дисконтной карте (если голочка не отмечена то вход по номеру телефона):','','text-align:left');
+            echo "</td><td>";
+            if($product['cardorphone']==1)
+            {
+                echo $form->input_('checkbox','cardorphone','','','','float:left;',0,'','','','checked="checked"');
+            }
+            else
+            {
+                echo $form->input_('checkbox','cardorphone','','','','float:left;',0,'','','','');
+            }
+            
+            echo "</td></tr>";
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Номер карты:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','namberCard','','',$product['namberCard'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+             echo "<tr><td>";
+            echo $form -> titleandhelp('Телефон:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','phone','','',$product['phone'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('ФИО:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','name','','',$product['name'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+             echo "<tr><td>";
+            echo $form -> titleandhelp('Название организации:','','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','org','','',$product['org'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Скидка в %:','','text-align:left');
+            echo "</td><td>";
+            if($product['discount']==0)
+            {
+                echo $form->input_('text','discount','','','','float:left;width:350px;',0,'','','','');
+            }
+            else
+            {
+                echo $form->input_('text','discount','','',$product['discount'],'float:left;width:350px;',0,'','','','');
+            }
+            
+            echo "</td></tr>";
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Общая сумма заказа:','','text-align:left');
+            echo "</td><td>";
+            if($product['zakaz']==0)
+            {
+                echo $form->input_('text','zakaz','','onlynumbers','','float:left;width:350px;',0,'','','','');
+            }
+            else
+            {
+                echo $form->input_('text','zakaz','','onlynumbers',$product['zakaz'],'float:left;width:350px;',0,'','','','');
+            }
+            
+            echo "</td></tr>";
+            
+             echo "<tr><td>";
+            echo $form -> titleandhelp('Email:','','text-align:left');
+            echo "</td><td>";
+            if(empty($product['email']))
+            {
+                echo $form->input_('text','email','','','','float:left;width:350px;',0,'','','','');
+            }
+            else
+            {
+                echo $form->input_('text','email','','',$product['email'],'float:left;width:350px;',0,'','','','');
+            }
+            
+            echo "</td></tr>";
+            
+            
+            echo "<tr><td>";
+            echo $form -> titleandhelp('Адрес доставки:','','text-align:left');
+            echo "</td><td>";
+            echo "<textarea type='textarea' name='address' style='float:left;width:350px;'>".$product['address']."</textarea>";
+            //echo $form->input_('textarea','address','','',$product['address'],'float:left;width:350px;',0,'','','','');
+            echo "</td></tr>";
+            
+        echo "</table>";
+        echo $form->input_('submit',$btn,$btn,'btnSave','Сохранить','');
+        echo $form->forme();
+        ?>
+    </td>
+  </tr>

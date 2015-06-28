@@ -1,0 +1,74 @@
+<?php
+// Подключаем конфигурацию и класс базы данных
+$root = $_SERVER['DOCUMENT_ROOT'];
+require_once  "class.symbianm.valid.php";
+//print_r($_POST);
+
+if(isset($_POST ['pass'])) 
+    if (!$pass = validClass::sanitiseString($_POST['pass']))
+       unset($pass);
+    
+if(isset($_POST ['login'])) 
+    if (!$login = validClass::sanitiseString($_POST['login']))
+       unset($login);    
+    
+//-------------------------------------------------------
+if (($redir = $_SERVER['HTTP_REFERER']) == ""){
+    die ("Error cod.:1 - Строка запроса пуста!");
+    exit;
+}
+//-------------------------------------------------------
+if (isset($login) && isset($pass)) {
+
+    //$pass=md5(md5(md5($pass)));  
+    $pass=md5($pass);  
+    $login=md5($login);
+    // Инициализируем подключение
+    $db = db :: getInstance();
+
+    $db -> query("SELECT id, login, pass, user FROM admin WHERE login='".$login."'");
+
+    if ($db -> getCount() > 0) {
+
+        $myrow = $db -> getRow();
+        
+        // Проверка пароля
+        if ($pass != $myrow['pass']) {
+            Header ("Location: in/errorLogin/7");
+            exit;
+        }
+        // Запускаем сессию
+        session_name("Autentification");
+        session_start();
+        session_cache_limiter('nocache,private');
+        
+        // Вставляем переменные
+        //  $_SESSION['user_id']    = $myrow['id'];
+        $_SESSION['user_login'] = $myrow['login'];
+        $_SESSION['user_pass']  = $myrow['pass'];
+        //$_SESSION['user']  = $myrow['user'];
+        $_SESSION['userID']  = $myrow['id'];
+        
+        Header ("Location: /admin/index");
+        exit;
+    }
+    else {
+        Header ("Location: in/errorLogin/4");
+        exit;
+    }
+} 
+else 
+    if (isset($login) && !isset($pass)) {
+        Header ("Location: in/errorLogin/3");
+        exit;
+    }
+    else
+        if (!isset($login) && isset($pass)) {
+            Header ("Location: in/errorLogin/2");
+            exit;
+        }
+        else {
+            Header ("Location: in/errorLogin/1");
+            exit;
+        }
+?>

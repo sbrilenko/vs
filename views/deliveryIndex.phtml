@@ -1,0 +1,154 @@
+<?php
+$page->setTitle('Товары с доставкой');
+?>
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Товары с доставкой</h1>
+            <div class="full-cont">
+			<div class="f-r">
+			<div class=" delivery_box">
+				<p >Если ваш заказ составляет менее 500,00 грн, стоимость доставки оговаривается индивидуально, в зависимости от адреса доставки.</p>
+						
+			</div>
+			<div  class="kkz_box_delivery ">
+				<div class="kkz_delivery_img"></div>
+			<div class="page_text mar_top_10" style="text-align: center;"><a class="text_delivery_box  "   href="/kkz">Корпоративно – коллективный заказ</a></div>
+			</div>
+			<!--div  class="got_box_delivery">
+				<div class="got_delivery_img"></div>
+					<div class="page_text mar_top_10" style="text-align: center;"><a  class="arial_12_18  " href="/kkz">Готовые наборы</a></div>
+			</div-->
+            </div>
+			<div class="delivery" >
+				<div class="preview">
+					<p class="pw">Доставка продукции осуществляется на всей территории Донецка и Макеевки.
+					</p>				
+				</div>
+				<div class="mk-desc">
+				<p style="margin-bottom:20px;">После оформления заказа на сайте, вам придет информационное SMS. В течение часа заявка будет обработана и с вами свяжется наш менеджер для уточнения всех деталей относительно заказа и его доставки. Сумма заказа может измениться в пределах ±7% (из-за колебаний веса упаковки товара). </p>
+					<h3 class="h3">Время доставки</h3>
+						<p style="margin-bottom:30px;">Заказы доставляются дважды в сутки с 10.00 до 13.00 и с 17.00 до 20.00. Таким образом, товар, заказанный до 12 часов дня прибудет к вам вечером (с 17.00 до 20.00); заказанный с 12.00 дня до 6.00 утра — утром (с 10.00 до 13.00).
+						</p>
+					<h3 class="h3">Условия оплаты</h3>
+						<p style="margin-bottom:0;">Оплата осуществляется при получении заказа:
+						</p>
+						<ul class="creer_ul">
+								<li><span class="li_carer"></span><div class="page_text  mar_top_7 ">Наличными курьеру,</div></li>
+								<li><span class="li_carer"></span><div class="page_text   ">Банковской картой  </div></li>
+				</ul>		<p>Курьер предоставит вам чек на групповой заказ, а также расходные документы с указанием стоимости каждого отдельного заказа.
+<br/>Сумма заказа может измениться в пределах ±7% (из-за колебаний веса упаковки товара).</p>
+					
+						
+					
+				
+				<div>			
+			</div>           
+        </div>
+        </div>
+        </div>
+					
+		<div class="clear_both"></div>
+	
+    
+		
+		
+
+  
+ <?php 
+
+ $page->addScript('js/jquery.form.js','js/mask.js','js/oform.js','js/json2.js','js/user.js');
+ $d=0;
+ $arrpro=$prd->getkkz();
+ if(count($arrpro)>0)
+ {
+     echo "<div class='delim-sh'></div>";
+     echo "<div class='title_text mar_top_80 mar_bot_20 f_24'>Корпоративно-коллективный заказ (ККЗ)</div>
+<div class='float_left w_47 page_text'>Корпоративно-коллективный заказ  (ККЗ) – это прекрасная возможность для вас, ваших коллег и друзей получать самые свежие и любимые вами колбасы, не выходя из офиса или дома.</div>
+<div class='float_right w_47 page_text'>Ваш заказ будет доставлен вам в установленный день и согласованное время. В зависимости от объема заказа действуют специальные условия доставки.</div>";
+    echo "<div class='clear_both'></div>";
+	echo "<ul class='ass-all' style='margin-top:0;'>";
+                    foreach($arrpro as $arrproindex=>$arrproval)
+                    {if($d <= 3){
+                        if($arrproindex==4)
+                        {
+                            echo "<li class='kkzmain no-margin-r'>";
+                        }
+                        else  echo "<li class='kkzmain'>";
+                        if(!empty($arrproval['photo']))
+                        {
+                             //$photo=$prd->formatoutputphoto($arrproval['photo']);
+                             $photo=str_replace('.','',$arrproval['photo']);
+                             $photo=str_replace('-','_',$photo);
+                            if(file_exists($root."/img/products/fsize1/".$photo."_ass.jpg"))
+                            {
+                                echo "<div><a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/".$photo."_ass.jpg' /></a></div>";
+                                echo "<div class='clear_both'></div>"; 
+                            }
+                            else
+                            {
+                                 echo "<div><a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                                 echo "<div class='clear_both'></div>";
+                            }
+                        }
+                        else
+                        {
+                             echo "<div><a href='/product/more/id/".$arrproval['id']."/from/kkz'><img src='../img/products/fsize1/good-empty_ass.png' /></a></div>";
+                             echo "<div class='clear_both'></div>";
+                        }
+                        //echo  $prd->kkzphoto($arrproval['photo'],$arrproval['id']);
+                            
+                        echo "<a class='name' href='/product/more/id/".$arrproval['id']."/from/kkz'>".$arrproval['name']."</a>";
+                        echo "<div class='after-name'></div>";
+                        echo $prd->getmanufname($arrproval['idmanufacturers']);
+                        $base_ed=$prd->getpricefor($arrproval['id_base_ed_iz']);
+                        if(!empty($base_ed))
+                        {
+                                echo "<br />";
+                                echo '<div class="other">Цена за '. $base_ed.': '. $prd->priceofbaseediz($arrproval['id']).' грн</div>';
+                        }
+                        if(!empty($arrproval['weight']))
+                        {
+                             echo "<div class='other'>Вес: ".$arrproval['weight']."</div>";
+                        }
+                        
+                        echo '<div class="clear_both"></div>';
+                        $flag=0;
+                         foreach($_SESSION['arrayorder'][$_SESSION['active']] as $ind=>$vol)
+                            {
+                                if($_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']==$arrproval['id'])
+                                {
+                                        echo '<div class="kkz-price-style f-l">Цена заказа: <span class="kkz-price">'.$prd->getuserpriceformat($arrproval['id'],$arrproval['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k']).' грн</span></div>';
+                                        echo "<div class='clear_both'></div>";
+                                        echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                                        echo '<input type="hidden" name="id" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id'].'"/>';
+                                        echo '<input type="button" class="kkz-plus-minus plus disabled" disabled="disabled"  /><input type="text" readonly  class="val kkz-kol-input" value="'.$_SESSION['arrayorder'][$_SESSION['active']][$ind]['k'].'"/><input type="button" class="kkz-plus-minus minus disabled" disabled="disabled"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arrproval['user_ed_iz'],$_SESSION['arrayorder'][$_SESSION['active']][$ind]['id']).'</span>';
+                                        echo '<a href="/cart" class="in-basket">В корзине</a></form></div>';
+                                        $flag=1;
+                                        break;
+                                }
+                            }
+                        
+                        if($flag==0)
+                        {
+                            echo '<div class="kkz-price-style f-l">Цена заказа: <span class="kkz-price">'.$prd->getuserpriceformat($arrproval['id'],$arrproval['user_ed_iz'],1).' грн</span></div>';
+                            echo "<div class='clear_both'></div>";
+                            echo '<div class="f-l kkz-buy-top-block"><form method="post">';
+                            echo '<input type="hidden" name="id" value="'.$arrproval['id'].'"/>';
+                            echo '<input type="button" class="kkz-plus-minus plus"  /><input type="text" readonly  class="val kkz-kol-input" value="1"/><input type="button" class="kkz-plus-minus minus"  /><span class="kkz-kol-input" style="padding:0;">'.$prd->getusernameediz($arrproval['user_ed_iz'],$arrproval['id']).'</span>';
+                            echo '<span class="buy kkz-buy">Купить</span></form></div>';
+                        }
+                        echo "</li>";
+                    $d++;}}
+                    echo "</ul>";
+					  echo '<div class="clear_both"></div>';;
+					echo '<div class=" bottom_bt_delivery" ><a class="all_product " style="padding-left:31px;" href="/kkz">Показать&nbsp;еще</a></div>';
+                }
+?> 
+	<div class="clear_both"></div>
+	
+
+<div class="clear_both"></div>
+</div>
+</div>
+</div>

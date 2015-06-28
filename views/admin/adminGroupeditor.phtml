@@ -1,0 +1,152 @@
+<?php
+    $db = db :: getInstance(); 
+    $action = $controller -> getParam(1);
+    $id = (int)$controller -> getParam(2);
+    $subaction = $controller -> getParam(3);
+    $subid = (int)$controller -> getParam(4);
+    
+    //if ($action != 'deletegroup' and $action != 'editgroup' and $action != 'addgroup') header("Location: /admin/group");
+    //if ($action != $subaction)
+    //if ($subaction != 'deletesubgroup' and $subaction != 'editsubgroup' and $subaction != 'addsubgroup') header("Location: /admin/group");
+    
+    if($action == 'addgroup')
+    {
+        $title = 'Введите название нового вида продукции';
+        $btn = 'add';
+    }
+    else
+    {
+        $title = 'Редактирование продукции';
+        $btn = 'edit';
+    }
+    
+    if ($action == 'deletegroup')
+    {
+        //плучаем id всех товаров которые относились к данной категории продкуции
+        $sql="SELECT * FROM products WHERE idGroup={$id}";
+        $db->query($sql);
+        if($db->getCount()>0)
+        {
+            $sql_all_pr_this_firm=$db->getArray();
+            //пройдемся и удалим их из состава наборов
+            foreach($sql_all_pr_this_firm as $sql_all_pr_this_firm_indexs=>$sql_all_pr_this_firm_val)
+            {
+                $sql_update_sostav="UPDATE sostav SET archive=1 WHERE id_ass=".$sql_all_pr_this_firm_val['id'];
+                $db->query($sql_update_sostav);
+            }
+        }
+        //обновляем товары 
+        $sql="UPDATE products SET archive=1 WHERE idGroup={$id}";
+        $db->query($sql);
+        $db -> query("UPDATE sgroups SET archive=1 WHERE id = {$id}");
+        header("Location: /admin/group");
+        exit();
+    }
+    
+    if ($action == 'delete' and $subaction == 'deletesubgroup')
+    {
+        $db -> query("DELETE FROM ssubgroups WHERE id = {$subid}");
+        header("Location: /admin/groupEditor/editgroup/$id");
+        exit();
+    }
+    
+    if ($action == 'editgroup')
+    {
+        $db -> query("SELECT name FROM sgroups WHERE id = {$id}");
+        $group = $db -> getValue();
+        if (!$group) header("Location: /admin/group");
+    }
+    
+    if ($subaction == 'editsubgroup')
+    {
+        $db -> query("SELECT name FROM ssubgroups WHERE id = {$subid}");
+        $subgroup = $db -> getValue();
+        if (!$subgroup) header("Location: /admin/group");
+    }
+?>
+<tr>
+<td class='head'>
+<?php
+    $tut = 'group';
+    include "menu.php"; 
+    $form = new ad();
+?>
+</td>
+</tr>
+<tr>
+    <td>
+    <?if ($subaction != 'editsubgroup' and $subaction != 'addsubgroup'){?>
+    <div class="back"><a href="/admin/group">НАЗАД</a></div>
+        <div class="title"><?=($action == 'addgroup')?'Добавление':'Редактирование';?> продукции</div>
+        <div id="result" style="color: green;"></div>
+		<?php
+        ($action == 'addgroup')?$page->setTitle('Добавление продукции | Высший сорт'):$page->setTitle('Редактирование продукции | Высший сорт');
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/group.php','console.log(jqForm);',"
+        if (responseText.indexOf('error') == -1) 
+            location.href='/admin/groupEditor/editgroup/'+responseText;
+        else
+       	    alert(responseText.replace(/<.*?>/g, ''));");
+        
+          
+        if ($btn) echo $form->input_('hidden','action','','',$btn,'',0,'','','','','','','');    
+        if ($group and $id) echo $form->input_('hidden','id','','',$id,'',0,'','','','','','','');
+        echo "<table style='width:100%;'>";
+            echo "<tr><td>";
+            echo $form -> titleandhelp($title,'','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','name','','',$group,'width:350px;float:left;',0,'','','','','','','');
+            echo "</td></tr>";
+            echo "<tr><td colspan='2' align='center'><br />";
+            echo $form->input_('submit',$btn,$btn,'','Сохранить','',0,'','','','','','','');
+            echo "<br /></td></tr>";
+           
+        echo "</table>";
+        echo $form->forme();
+        ?>
+        <?}else{?>
+        <div class="back"><a href="/admin/groupEditor/editgroup/<?=$id?>">НАЗАД</a></div>
+        <div class="title">Добавление вида продукции в продукцию: <?=$group?></div>
+		<?
+        
+        if($subaction == 'addsubgroup')
+        {
+            $title = 'Введите название новой продукции';
+            $btn = 'addsubgroup';
+        }
+        else
+        {
+            $title = 'Изменить имя вида продукции';
+            $btn = 'editsubgroup';
+        }
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/group.php','console.log(jqForm);',"
+        if (responseText.indexOf('error') == -1) 
+            location.href='/admin/groupEditor/editgroup/'+responseText;
+        else
+       	    alert(responseText.replace(/<.*?>/g, ''));");
+        
+        if ($btn) echo $form->input_('hidden','action','','',$btn,'',0,'','','','','','','');
+        if ($group and $id) echo $form->input_('hidden','id','','',$id,'',0,'','','','','','','');
+        if ($subgroup and $subid) echo $form->input_('hidden','subid','','',$subid,'',0,'','','','','','','');
+        echo "<table style='width:100%;'>";
+            echo "<tr><td>";
+            echo $form -> titleandhelp($title,'','text-align:left');
+            echo "</td><td>";
+            echo $form->input_('text','name','','',$subgroup,'width:350px;float:left;',0,'','','','','','','');
+            echo "</td></tr>";
+            if ($action == 'editgroup' and $subaction != 'addsubgroup' and $subaction != 'editsubgroup')
+            {
+                echo '<tr>';
+                    echo '<td>';
+                        echo '<a href="/admin/groupEditor/editgroup/'.$id.'/addsubgroup">+ ДОБАВИТЬ ВИД ПРОДУКЦИИ</a>';
+                    echo '</td>';
+                echo '</tr>';
+            }
+            echo "<tr><td colspan='2' align='center'><br />";
+            echo $form->input_('submit', $btn, $btn,'','Сохранить','',0,'','','','','','','');
+            echo "</td></tr>";
+        echo "</table>";
+        echo $form->forme();
+        ?>
+        <?}?>
+    </td>
+  </tr>

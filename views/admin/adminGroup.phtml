@@ -1,0 +1,42 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'group';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad(); // Создаем экземпляр класса Sample
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Продукция</div>
+		<?php
+        echo $form -> formb('form','form','post','multipart/form-data','','','','');
+        echo '<a href="/admin/groupEditor/addgroup">+ ДОБАВИТЬ ПРОДУКЦИЮ</a>';
+        $page->setTitle('Продукция | Высший сорт');
+        $db -> query("SELECT name,id FROM sgroups ORDER BY name ASC");
+        $count = $db -> getCount();
+        //$half = floor($count/2);
+        if ($count > 0) 
+        {
+            $groups = $db -> getArray();
+            echo '<ul>';
+            foreach($groups as $i => $group)
+            {                
+                echo '<li style="text-align:left">';
+                echo $group['name'];
+                echo '&emsp;<a href="/admin/groupEditor/editgroup/'.$group['id'].'"><img src="/img/admin/e.png" title="Редактировать"/></a>';
+                echo '&emsp;<a class="del" href="/admin/groupEditor/deletegroup/'.$group['id'].'"><img src="/img/admin/d.png" title="Удалить"/></a>';
+                echo'</li>';
+            }
+            echo '</ul>';
+        }
+        echo "<table style='width:100%;'>";
+        echo "</table>";
+        echo $form->forme();
+        ?>
+        
+
+    </td>
+  </tr>

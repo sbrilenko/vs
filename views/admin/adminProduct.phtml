@@ -1,0 +1,66 @@
+<tr>
+<td class='head'>
+<?php
+    $tut = 'product';
+    include "menu.php"; 
+    $db = db :: getInstance();   
+    $form = new ad();
+?>
+</td>
+</tr>
+<tr>
+    <td>
+        <div class="title">Ассортимент</div>
+		<?php
+        $page->setTitle('Ассортимент | Высший сорт');
+        echo $form -> formb('form','form','post','multipart/form-data','','views/admin/ajax/products/productView.php','',"
+        //console.log(responseText);return false;
+        if (responseText.indexOf('error') == -1) 
+            $('#fieldProduct').html(responseText);
+        else
+       	    alert(responseText.replace(/<.*?>/g, ''));");
+         
+        echo "<table align='center'>";
+            echo "<tr>";    
+                echo "<td width='50%'>";
+                    echo $DLL -> greateSelect('sfirms','Выберите производителя',$_SESSION['Firm'],'width:350px',"onchange='getList()'");
+                echo"</td>";
+                
+                echo "<td width='50%'>";
+                    echo '<span id="forSelectCategory">';
+                        echo $DLL -> greateSelect('category','Выберите категорию',$_SESSION['category'],'width:350px',"onchange='getList()'");
+                    echo '</span>';
+                echo"</td>";
+            echo "</tr>";
+            
+            echo "<tr>";    
+                echo "<td width='50%'>";
+                    echo '<span id="forSelectGroup">';
+                        echo $DLL -> greateSelect('sgroups','Выберите продукцию',$_SESSION['Group'],'width:350px',"onchange='getList()'");
+                    echo '</span>';
+                echo"</td>";
+                   
+                echo "<td width='50%'>";
+                    echo '<span id="forSelectSubgroup">';
+                        echo $DLL -> greateSelect('ssubgroups','Выберите вид продукции',$_SESSION['Subgroup'],'width:350px',"onchange='getList()'");
+                    echo '</span>';
+                echo"</td>";
+               
+            echo "</tr>";
+            echo "<tr>";
+                echo "<td colspan='2' align='center'>";
+                 echo $form -> input_('hidden','reset','reset','',1,'',0);
+                    echo $form -> input_('submit','resetBtn','','','сбросить','height:24px;padding:0 4px',0);
+                echo"</td>"; 
+                                 
+            echo "</tr>";
+        echo "</table>";
+        
+         
+        echo $form -> forme();
+        ?>
+        <span id="fieldProduct">
+            <?php require_once 'ajax/products/productView.php'; ?>
+        </span>
+    </td>
+  </tr>

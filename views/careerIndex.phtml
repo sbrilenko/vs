@@ -1,0 +1,294 @@
+
+<?php
+$page->setTitle('Карьера');
+$root = $_SERVER['DOCUMENT_ROOT'];
+require_once $root."/lib/class.invis.db.php";
+require_once $root."/lib/class.a.php";
+$db = db::getInstance();
+$a = new ad;
+?>
+<script type="text/javascript">   
+$(function(){$('.slide_text_hidden1').slideUp(0)})
+
+$(function(){
+    $('.text_career_slide').click(function(){
+        if($('.slide_text_hidden1',$(this).parent().prev()).text() == ''){
+            return false;
+        } 
+        
+		if ($(this).hasClass('showing'))
+		{
+			$('.slide_text_hidden1',$(this).parent().prev()).slideUp(400)
+			$(this).removeClass('showing').text('развернуть')
+		}
+		else
+		{
+			$('.slide_text_hidden1',$(this).parent().prev()).slideDown(400)
+			$(this).addClass('showing').text('свернуть')
+		}
+	})
+	
+})
+   // $(function(){$('.slide_text_hidden2').slideUp(0)})
+
+/*$(function(){$('#text_slide_bot').click(function(){
+    
+        if($('.slide_text_hidden1',$(this).parent().prev()).text() == ''){
+            return false;
+        } 
+		if ($(this).hasClass('showing'))
+		{
+			$('.slide_text_hidden2').slideUp(400)
+			$(this).removeClass('showing').text('развернуть')
+		}
+		else
+		{
+			$('.slide_text_hidden2').slideDown(400)
+			$(this).addClass('showing').text('свернуть')
+		}
+	})
+	
+}) */      
+</script>
+
+
+<div class="margin_auto width4size header_h">
+        <div class="body-margin">
+        <div class="more-margin">
+            <h1>Карьера</h1>
+            <div class="title_text mar_top_20">Основываясь на многолетней практике успешного формирования и подготовки высококвалифицированных торговых команд, компания «Высший сорт» приглашает новых сотрудников, на конкурсной основе, попробовать свои силы в нескольких направлениях деятельности компании.</div>
+						
+						
+			<div class="w_48 mar_right_5 float_left">
+			<div class="title_text f_18 mar_top_20">Наши принципы работы:</div>
+			<ul class="creer_ul">
+				<li><span class="li_carer"></span><div class="page_text  mar_top_7 ">Ориентируемся на результат</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Ценим развитие и достижения каждого сотрудника</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Приветствуем инициативность и профессионализм </div></li>
+				<li><span class="li_carer"></span><div class="page_text  mar_left_38  l_h_17">Получаем огромное удовольствие от того, чем занимаемся. <br/>Наша работа – это наше хобби!</div></li>
+			</ul>			
+			</div>
+			<div class="w_47  float_right">
+					<div class="title_text f_18 mar_top_30">Нашим сотрудникам мы предлагаем:</div>
+			<ul>
+				<li><span class="li_carer"></span><div class="page_text  mar_top_7 ">Комфортные условия работы</div></li>
+				<li><span class="li_carer"></span><div class="page_text mar_left_38  l_h_17  ">Конкурентную оплату труда и привлекательную систему<br/> вознаграждений</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Возможность профессионального и карьерного роста</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Социальный пакет</div></li>
+				<li><span class="li_carer"></span><div class="page_text  ">Дружный коллектив и высокую корпоративную культуру</div></li>
+			</ul>	 
+			</div>
+			  <div class="clear_both"></div>
+			
+			  
+			  <div class="text_bg_career">Сотрудники – самый важный ресурс нашей компании, поэтому создание и обеспечение уникального здорового <br/>и комфортного климата внутри коллектива один из основных принципов кадровой политики ООО «Высший сорт».</div>
+			
+			
+			<div class="title_text f_18 mar_top_30">Как стать сотрудником?</div>
+			<div class="page_text  mar_top_7 ">Отбор в компанию «Высший&nbsp;сорт» состоит из нескольких этапов:</div>
+			<ul class="creer_ul">
+				<li><span class="li_carer"></span><div class="page_text  mar_top_7 mar_left_38  l_h_17">Предоставление и рассмотрение резюме. <br/>(Вы можете подать заявку через официальный сайт компании, а также прислать резюме на почту <a href="mailto:hr@vsort.com.ua">hr@vsort.com.ua</a> или<br/> обратиться в отдел кадров.)</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Анкетирование и тестирование</div></li>
+				<li><span class="li_carer"></span><div class="page_text   ">Собеседование с руководителем подразделения</div></li>
+				<li><span class="li_carer"></span><div class="page_text ">Центр профессионального отбора</div></li>
+			</ul>	
+			<div class="page_text  mar_top_7">Если вы соответствуете нашим требованиям и желаете работать в компании «Высший&nbsp;сорт», будем рады видеть вас в составе нашей команды.</div>
+			
+			
+<?
+$sql = "SELECT * FROM jobs WHERE is_actual = 1 AND deleted = 0";
+$db->query($sql);
+if($db->getCount()>0)
+{
+    echo '<div class="title_text f_18 mar_top_30  mar_bot_10 red_text">Вакансии</div>';
+    echo '<TABLE class="career_text table" >';
+    $jobs = $db->getArray();
+    foreach($jobs AS $key => $job)
+    {
+        $text = $a->replaceToInsert($job['description']);
+        $date_act = explode('-',$job['date']);
+        echo '<TR class="table_work pad_bot_20  class_red " >';
+        echo '<TD class=" career_work  "><span class="date_work">'.$date_act[2].'.'.$date_act[1].'.'.$date_act[0].'</span>'.$job['name'].'<div class="slide_text_hidden1 mar_left_140">'.$text.'</div></TD> <TD ><div class=" text_career_slide pad_top_13 " id="text_slide3">развернуть</div></TD>';
+        echo '</TR>';
+    }
+    echo '</TABLE>';
+}
+
+?>			
+			
+			
+			<!--div class="title_text f_18 mar_top_30  mar_bot_10 red_text">Вакансии</div>
+			
+			
+			<TABLE class="career_text table" >   
+										
+											<TR class="table_work pad_bot_20  class_red " >
+												 <TD class=" career_work  "><span class="date_work"> 22.03.2013</span>Инженер-теплоэнергетик </TD> <TD ><div class=" text_career_slide pad_top_13 " id="text_slide3">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+													 <TD class=" career_work  "><span class="date_work"> 22.03.2013</span>Инженер-сметчик </TD> <TD  ><div class=" text_career_slide pad_top_13 " id="text_slide2">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+													<TD class=" career_work  "><span class="date_work"> 22.03.2013</span>Начальник отдела капитального строительства</TD> <TD  ><div class=" text_career_slide pad_top_13" id="text_slide2">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+													 <TD class=" career_work  "><span class="date_work"> 22.03.2013</span> Финансовый аналитик<div class="slide_text_hidden1 mar_left_140">
+																			<br/>
+																				<p><strong>Требования к кандидатам:</strong></p>
+																				<p>
+																										
+																																Высшее образование (по специальности «Электрические станции», «Электрические сети и системы»,  «Релейная защита»)
+																															Опыт работы в сфере энергетики – от 3-х лет (в эксплуатационных службах релейной защиты и автоматики с элементами КИПиА, АСУТП; проектных или наладочных организациях, которые занимались проектированием или наладкой релейной защиты энергетических объектов)
+																															Знание электрического оборудования и особенностей работы теплоэлектростанций, линейных и распределительных сетей
+																															<br/>
+																															Уверенный пользователь ПК
+																															<br/>
+																															Быстрая обучаемость, способность работать с большими объемами информации, ответственность, внимательность, активность
+																				</p>
+																				<br/>
+																				<p><strong>Должностные обязанности:</strong></p>
+																				
+																				<p>Участие в разработке перспективных планов технического переоснащения, реконструкции устройств релейной защиты и автоматики ТЭС
+																															<br/>
+																															Участие в разработке технических заданий на реконструкцию устройств РЗиА
+																															<br/>
+																															Подготовка к реализации проектов по реконструкции РЗиА
+																															<br/>
+																															Контроль и учет выполнения работ по реконструкции РЗиА
+																															<br/>
+																															Ведение и контроль необходимой отчетности по эксплуатации РЗиА
+																															
+																			</p>
+																			<br/>
+																				<p><strong>Условия работы:</strong></p>
+																				
+																				<p>Конкурентный уровень заработной платы (обсуждается на собеседовании)
+																															<br/>
+																															Официальное трудоустройство, полный социальный пакет
+																															<br/>
+																															Работа в стабильной развивающейся компании
+																															<br/>
+																															Возможность профессионального и карьерного роста
+																														
+																															
+																															
+																			</p><br/></div> </TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide1">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+													 <TD class=" career_work "><span class="date_work"> 22.03.2013</span>Специалист по инвестициям  </TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide1">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+												 <TD class=" career_work "><span class="date_work"> 22.03.2013</span>Секретарь руководителя  </TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide2">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+												 <TD class=" career_work "><span class="date_work"> 22.03.2013</span>Инженер по релейной защите и автоматике </TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide2">развернуть</div></TD> 
+											</TR>
+											<TR class="table_work pad_bot_20 class_red" >
+												<TD class=" career_work "><span class="date_work"> 22.03.2013</span>Начальник отдела по охране труда</TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide2">развернуть</div></TD> 
+											</TR>
+											
+					</TABLE-->
+		
+<!--
+			<ul class="mar_top_30">
+					<li class="height_60"><a href="#"><div class="title_text f_14_22 text_gray float_left mar_right_50">15.02.2013</div><div class="title_text f_14_22 float_left color_black">Специалист по инвестициям </div></a></li>
+					<li class="height_60"><a href="#"><div class="title_text f_14_22 text_gray float_left mar_right_50">10.03.2013</div><div class="title_text f_14_22 float_left color_black">Секретарь руководителя </div></a></li>
+					<li class="height_60"><a href="#"><div class="title_text f_14_22 text_gray float_left mar_right_50">08.02.2013</div><div class="title_text f_14_22 float_left color_black">Инженер по релейной защите и автоматике </div></a></li>
+					<li class="height_60"><a href="#"><div class="title_text f_14_22 text_gray float_left mar_right_50">19.01.2013</div><div class="title_text f_14_22 float_left color_black">Начальник отдела по охране труда</div></a></li>
+
+			</ul>-->
+			
+				<div class="title_text f_18 mar_top_30  ">Профессиональное обучение и подготовка</div>
+				
+				<div class="page_text  mar_top_5 ">На базе торгового дома компании «Высший сорт» с января 2013&nbsp;г открылась собственная корпоративная школа продаж. Все программы тренингов на основе методик «системного подхода FMCG», уже успешно адаптированы в практических условиях Обучение проводят как внутренние специалисты компании, так и приглашенные профессиональные тренеры и консультанты.</div>
+
+                
+                
+<?
+$month_names = array('01'=>'января','02'=>'февраля','03'=>'марта','04'=>'апреля','05'=>'мая','06'=>'июня','07'=>'июля','08'=>'августа','09'=>'сентября','10'=>'октября','11'=>'ноября','12'=>'декабря');
+$sql = "SELECT * FROM trainings WHERE is_actual = 1 AND deleted = 0 AND ((date_begin>CURDATE() AND date_begin < DATE_ADD(CURDATE(),INTERVAL  3 MONTH)) OR (date_begin<CURDATE() AND date_end >CURDATE()))";
+$db->query($sql);
+if($db->getCount()>0)
+{
+    echo '<div class=" w_50 float_left  mar_bot_40">';
+    echo '<div class="title_text f_18 mar_top_30 mar_bot_20  ">Календарь тренингов на ближайшие 3 месяца:</div>';
+    echo '<TABLE  >';
+    echo '<TR class="table_career h_21" >';
+    echo '<TD class=" w_130" >Дата и время</TD> <TD class=" w_260  pad_left_5 ">Название тренинга</TD><TD ></TD>';
+    echo '</TR>';
+    $trainings = $db->getArray();
+    foreach($trainings AS $key => $tr){
+        $text = $a->replaceToInsert($tr['description']);
+        $date_begin = explode('-',$tr['date_begin']);
+        echo '<TR class="table_career pad_bot_20" >';
+        echo '<TD class="career_text w_130 pad_top_13" >'.$date_begin[2].' '.$month_names[$date_begin[1]].' '.$date_begin[0].'<br/>'.$tr['time_begin'].'</TD> <TD class=" w_260 career_text  pad_top_13 pad_bot_13 "><span class="text_bold">'.$tr['name'].'</span><div class="slide_text_hidden1">'.$text.'</div> </TD> <TD ><div class=" text_career_slide pad_top_13" id="text_slide_bot">развернуть</div></TD>';
+        echo '</TR>';
+    }
+    echo '</TABLE>';
+    echo '</ul>
+          </div>
+	      <div class="w_47 float_right">';
+}
+else
+{
+    echo '<div class="w_47 float_left">';
+}
+?>
+
+					
+					
+
+						<div class="title_text f_18 mar_top_30   ">Обучение проводится по нескольким направлениям:</div>
+						<ul class="creer_ul  ">
+								<li><span class="li_carer"></span><div class="page_text  mar_top_7 ">Вводный курс для новых сотрудников</div></li>
+								<li><span class="li_carer"></span><div class="page_text l_h_24  ">Product training</div></li>
+								<li><span class="li_carer"></span><div class="page_text  l_h_24 ">Управление территорией</div></li>
+								<li><span class="li_carer"></span><div class="page_text l_h_24 ">Презентация</div></li>
+								<li><span class="li_carer"></span><div class="page_text   l_h_24">Технология визита</div></li>
+								<li><span class="li_carer"></span><div class="page_text  l_h_24 ">Преодоление возражений</div></li>
+								<li><span class="li_carer"></span><div class="page_text l_h_24  ">Управление командой</div></li>
+								<li><span class="li_carer"></span><div class="page_text l_h_24  ">«Полевой» коучинг (практическая подготовка).</div></li>
+						</ul>		
+				</div>
+				
+    
+				  <div class="clear_both"></div>
+				  <div class="delim-sh"></div>
+				<ul class="uderfooter mar_top_40 ">
+                <li class="">
+                    <div class="uderfooter_cust-li1-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/about">О компании</a>
+                        <br /><br />
+                         «Высший сорт» - успешная компания с многолетним опытом в сфере дистрибуции продуктов питания на территории Восточной Украины.
+                    </div>
+                </li>
+                <li class="left">
+                     <div class="uderfooter_cust-li5-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/assortment/full/">Ассортимент</a>
+                        <br /><br />
+                     Торговый дом «Высший сорт» предлагает широкий выбор высококачественных колбасных изделий из отборного сырья от лучших производителей.
+                    </div>
+                </li>
+                <li class="left ">
+                      <div class="uderfooter_cust-li2-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/customers">Клиентам</a>
+                        <br /><br />
+                     Клиенты компании «Высший сорт», становится представителями крупной торговой сети и получают возможность развития собственного бизнеса на льготных условиях.
+                   </div>
+                </li>
+                <li class="left ">
+                    <div class="uderfooter_cust-li3-img"></div>
+                    <div class="underfooter-title">
+                        <a href="/partners">Партнерам</a>
+                        <br /><br />
+                     Ознакомить с действующими специальными предложениями и дисконтной программой. Ознакомить с действующими специальными предложениями и дисконтной программой. 
+                    </div>
+                </li>
+             </ul>
+				
+</div>
+</div>
+</div>
