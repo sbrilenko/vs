@@ -1,6 +1,7 @@
 # Vs
 
-**Task:** Create web-site for 
+**Task:** Create web-site for trading house "Высший сорт" is a progressive and reliable company
+trade sausage products for over 10 years.
 
 **Technologies:** PHP, MySQL, jQuery
 
